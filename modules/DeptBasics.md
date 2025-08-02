@@ -1,6 +1,6 @@
 # DeptBasics Technical Documentation
 
-[📄 View Source Code](../../../contracts/modules/DeptBasics.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/DeptBasics.vy)
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # ChequeBook Technical Documentation
 
-[📄 View Source Code](../../../contracts/core/walletBackpack/ChequeBook.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/ChequeBook.vy)
 
 ## Overview
 

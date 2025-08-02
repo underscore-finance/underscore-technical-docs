@@ -1,6 +1,6 @@
 # Sentinel Technical Documentation
 
-[📄 View Source Code](../../../contracts/core/walletBackpack/Sentinel.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/Sentinel.vy)
 
 ## Overview
 

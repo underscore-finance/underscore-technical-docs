@@ -1,6 +1,6 @@
 # UndyHq Technical Documentation
 
-[📄 View Source Code](../../../contracts/registries/UndyHq.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/registries/UndyHq.vy)
 
 ## Overview
 

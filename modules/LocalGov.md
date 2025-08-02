@@ -1,6 +1,6 @@
 # LocalGov Technical Documentation
 
-[📄 View Source Code](../../../contracts/modules/LocalGov.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/LocalGov.vy)
 
 ## Overview
 

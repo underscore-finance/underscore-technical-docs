@@ -2,7 +2,7 @@
 
 ## Home
 
-- [Dev Home](./README.md)
+- [Underscore Developers](./README.md)
 - [Deployed Contracts](./deployments.md)
 - [Github](https://github.com/underscore-finance/underscore-protocol)
 - [User Docs](https://docs.underscore.finance/)

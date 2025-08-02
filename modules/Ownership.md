@@ -1,6 +1,6 @@
 # Ownership Technical Documentation
 
-[📄 View Source Code](../../../contracts/modules/Ownership.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/Ownership.vy)
 
 ## Overview
 

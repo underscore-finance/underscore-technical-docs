@@ -1,6 +1,6 @@
 # AaveV3 Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/yield/AaveV3.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/yield/AaveV3.vy)
 
 ## Overview
 

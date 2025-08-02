@@ -1,6 +1,6 @@
 # Curve Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/dexes/Curve.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/dexes/Curve.vy)
 
 ## Overview
 

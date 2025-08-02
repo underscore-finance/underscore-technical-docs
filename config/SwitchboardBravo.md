@@ -1,6 +1,6 @@
 # SwitchboardBravo Technical Documentation
 
-[📄 View Source Code](../../../contracts/config/SwitchboardBravo.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/config/SwitchboardBravo.vy)
 
 ## Overview
 

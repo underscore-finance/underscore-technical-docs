@@ -1,6 +1,6 @@
 # Billing Technical Documentation
 
-[📄 View Source Code](../../../contracts/core/Billing.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/Billing.vy)
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Euler Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/yield/Euler.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/yield/Euler.vy)
 
 ## Overview
 

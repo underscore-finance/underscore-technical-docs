@@ -1,6 +1,6 @@
 # Moonwell Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/yield/Moonwell.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/yield/Moonwell.vy)
 
 ## Overview
 

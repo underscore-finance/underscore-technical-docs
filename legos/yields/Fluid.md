@@ -1,6 +1,6 @@
 # Fluid Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/yield/Fluid.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/yield/Fluid.vy)
 
 ## Overview
 

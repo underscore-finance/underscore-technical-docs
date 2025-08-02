@@ -1,6 +1,6 @@
 # Hatchery Technical Documentation
 
-[📄 View Source Code](../../../contracts/core/Hatchery.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/Hatchery.vy)
 
 ## Overview
 

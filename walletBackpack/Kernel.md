@@ -1,6 +1,6 @@
 # Kernel Technical Documentation
 
-[📄 View Source Code](../../../contracts/core/walletBackpack/Kernel.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/Kernel.vy)
 
 ## Overview
 

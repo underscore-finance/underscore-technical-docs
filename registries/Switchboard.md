@@ -1,6 +1,6 @@
 # Switchboard Technical Documentation
 
-[📄 View Source Code](../../../contracts/registries/Switchboard.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/registries/Switchboard.vy)
 
 ## Overview
 

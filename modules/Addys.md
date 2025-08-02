@@ -1,6 +1,6 @@
 # Addys Technical Documentation
 
-[📄 View Source Code](../../../contracts/modules/Addys.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/Addys.vy)
 
 ## Overview
 

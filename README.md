@@ -1,12 +1,12 @@
 # Underscore Protocol Technical Documentation
 
-> **Looking for user documentation?** Visit the [User Documentation](../) for guides on using Underscore Protocol.
+> **Looking for user documentation?** Visit the [User Documentation](https://docs.underscore.finance/) to learn about how the protocol works, mechanism design, and conceptual guides (non-technical).
 
 ## Overview
 
 Underscore Protocol is a comprehensive wallet infrastructure system that provides **non-custodial smart contract wallets with integrated DeFi access, automated management capabilities, and sophisticated permission controls**. The protocol creates programmable wallet instances that can interact with external DeFi protocols through standardized interfaces while maintaining granular security controls and delegation mechanisms.
 
-Each UserWallet functions as an autonomous financial account capable of yield farming, token swapping, liquidity provision, collateralized borrowing, and rewards claiming across integrated protocols. The system supports delegation through Agents (automated managers with signature-based authentication), Payees (authorized payment recipients with configurable limits), and Cheques (time-locked payment promises), enabling complex financial workflows while preserving user control and security.
+Each User Wallet functions as an autonomous financial account capable of yield farming, token swapping, liquidity provision, collateralized borrowing, and rewards claiming across integrated protocols. The system supports delegation through Agents (automated managers with signature-based authentication), Payees (authorized payment recipients with configurable limits), and Cheques (time-locked payment promises), enabling complex financial workflows while preserving user control and security.
 
 ### Key Features
 
@@ -68,24 +68,24 @@ Modular integrations with external DeFi protocols for yield generation and tradi
 
 ### DEX Lego Partners
 
-| Contract                                              | Description                                                                                             |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| [AeroClassic.vy](legos/dexes/AeroClassic.md)         | Integration with Aerodrome Classic AMM pools for token swapping and liquidity management               |
-| [AeroSlipstream.vy](legos/dexes/AeroSlipstream.md)   | Integration with Aerodrome Slipstream (concentrated liquidity) for advanced trading and LP positioning |
-| [Curve.vy](legos/dexes/Curve.md)                     | Integration with Curve Finance supporting multiple pool types and optimized stable swaps                |
-| [UniswapV2.vy](legos/dexes/UniswapV2.md)             | Integration with Uniswap V2 AMM for token swapping and standard liquidity provision                    |
-| [UniswapV3.vy](legos/dexes/UniswapV3.md)             | Integration with Uniswap V3 for concentrated liquidity and NFT-based position management               |
+| Contract                                           | Description                                                                                            |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [AeroClassic.vy](legos/dexes/AeroClassic.md)       | Integration with Aerodrome Classic AMM pools for token swapping and liquidity management               |
+| [AeroSlipstream.vy](legos/dexes/AeroSlipstream.md) | Integration with Aerodrome Slipstream (concentrated liquidity) for advanced trading and LP positioning |
+| [Curve.vy](legos/dexes/Curve.md)                   | Integration with Curve Finance supporting multiple pool types and optimized stable swaps               |
+| [UniswapV2.vy](legos/dexes/UniswapV2.md)           | Integration with Uniswap V2 AMM for token swapping and standard liquidity provision                    |
+| [UniswapV3.vy](legos/dexes/UniswapV3.md)           | Integration with Uniswap V3 for concentrated liquidity and NFT-based position management               |
 
 ### Yield Lego Partners
 
-| Contract                                            | Description                                                                                                    |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [AaveV3.vy](legos/yields/AaveV3.md)                | Integration with Aave V3 for interest-bearing aTokens with automatic yield accrual                            |
-| [CompoundV3.vy](legos/yields/CompoundV3.md)        | Integration with Compound V3 (Compound III) for single-asset borrowing markets and COMP rewards               |
-| [Euler.vy](legos/yields/Euler.md)                  | Integration with Euler Protocol's ERC-4626 vaults for optimized lending with non-rebasing shares              |
-| [Fluid.vy](legos/yields/Fluid.md)                  | Integration with Fluid Protocol's liquidity layer for dynamic yield optimization across markets               |
-| [Moonwell.vy](legos/yields/Moonwell.md)            | Integration with Moonwell Protocol for cross-chain lending markets with multi-asset reward distribution       |
-| [Morpho.vy](legos/yields/Morpho.md)                | Integration with Morpho Protocol's peer-to-peer layer for improved lending rates through MetaMorpho vaults    |
+| Contract                                    | Description                                                                                                |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [AaveV3.vy](legos/yields/AaveV3.md)         | Integration with Aave V3 for interest-bearing aTokens with automatic yield accrual                         |
+| [CompoundV3.vy](legos/yields/CompoundV3.md) | Integration with Compound V3 (Compound III) for single-asset borrowing markets and COMP rewards            |
+| [Euler.vy](legos/yields/Euler.md)           | Integration with Euler Protocol's ERC-4626 vaults for optimized lending with non-rebasing shares           |
+| [Fluid.vy](legos/yields/Fluid.md)           | Integration with Fluid Protocol's liquidity layer for dynamic yield optimization across markets            |
+| [Moonwell.vy](legos/yields/Moonwell.md)     | Integration with Moonwell Protocol for cross-chain lending markets with multi-asset reward distribution    |
+| [Morpho.vy](legos/yields/Morpho.md)         | Integration with Morpho Protocol's peer-to-peer layer for improved lending rates through MetaMorpho vaults |
 
 ### Lego Data Management
 

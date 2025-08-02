@@ -1,6 +1,6 @@
 # CompoundV3 Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/yield/CompoundV3.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/yield/CompoundV3.vy)
 
 ## Overview
 

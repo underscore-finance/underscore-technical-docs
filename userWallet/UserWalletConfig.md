@@ -1,6 +1,6 @@
 # UserWalletConfig Technical Documentation
 
-[📄 View Source Code](../../../contracts/core/userWallet/UserWalletConfig.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/userWallet/UserWalletConfig.vy)
 
 ## Overview
 

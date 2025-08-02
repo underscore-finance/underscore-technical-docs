@@ -1,6 +1,6 @@
 # UniswapV3 Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/dexes/UniswapV3.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/dexes/UniswapV3.vy)
 
 ## Overview
 

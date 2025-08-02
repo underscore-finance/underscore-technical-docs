@@ -1,6 +1,6 @@
 # AeroSlipstream Technical Documentation
 
-[📄 View Source Code](../../../../contracts/legos/dexes/AeroSlipstream.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/dexes/AeroSlipstream.vy)
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # AddressRegistry Technical Documentation
 
-[📄 View Source Code](../../../contracts/modules/AddressRegistry.vy)
+[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/AddressRegistry.vy)
 
 ## Overview
 
