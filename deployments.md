@@ -6,7 +6,7 @@
 
 | Contract                 | Address                                                                                                               |
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| UserWalletTemplate       | [0x5aB75ef37A30736f38F637a9129348AD327EfD08](https://basescan.org/address/0x5aB75ef37A30736f38F637a9129348AD327EfD08) |
+| UserWalletTemplate       | [0x4C4D1a888a0b49eA217a8F41f207CFe59Ab03a40](https://basescan.org/address/0x4C4D1a888a0b49eA217a8F41f207CFe59Ab03a40) |
 | UserWalletConfigTemplate | [0x0E7064202c4F906Adc4D9F6D3C92470b62F624F1](https://basescan.org/address/0x0E7064202c4F906Adc4D9F6D3C92470b62F624F1) |
 
 ### Wallet Backpack
@@ -14,10 +14,10 @@
 | Contract       | Address                                                                                                               |
 | -------------- | --------------------------------------------------------------------------------------------------------------------- |
 | WalletBackpack | [0x0E8D974Cdea08BcAa43421A15B7947Ec901f5CcD](https://basescan.org/address/0x0E8D974Cdea08BcAa43421A15B7947Ec901f5CcD) |
-| ChequeBook     | [0x27F769D5eFaddB6f3beb5b51A7F083144a55aE5D](https://basescan.org/address/0x27F769D5eFaddB6f3beb5b51A7F083144a55aE5D) |
-| HighCommand    | [0xD13E72Dea7a32f487be9a3c6d0B640472Eccb4C8](https://basescan.org/address/0xD13E72Dea7a32f487be9a3c6d0B640472Eccb4C8) |
-| Kernel         | [0xf5097601AeeE421F0B1b33deBE788ab2159f6704](https://basescan.org/address/0xf5097601AeeE421F0B1b33deBE788ab2159f6704) |
-| Migrator       | [0xD30961C917709FE4bC2690A2B69E185acef392bD](https://basescan.org/address/0xD30961C917709FE4bC2690A2B69E185acef392bD) |
+| ChequeBook     | [0xF8009A583A82077c81A2c10C45Bd0122a26C0318](https://basescan.org/address/0xF8009A583A82077c81A2c10C45Bd0122a26C0318) |
+| HighCommand    | [0x84c54F4801FBf5c189E49d7CE5B1CB4378BE4372](https://basescan.org/address/0x84c54F4801FBf5c189E49d7CE5B1CB4378BE4372) |
+| Kernel         | [0xcb91C738E301bDf8Ee5354f0Ef2692B41145D217](https://basescan.org/address/0xcb91C738E301bDf8Ee5354f0Ef2692B41145D217) |
+| Migrator       | [0x99bf2C624C02082C16bD12a241bfC4cA1659b22C](https://basescan.org/address/0x99bf2C624C02082C16bD12a241bfC4cA1659b22C) |
 | Paymaster      | [0x5aDc5a2b5018426243C98Aa52E4696F614274946](https://basescan.org/address/0x5aDc5a2b5018426243C98Aa52E4696F614274946) |
 | Sentinel       | [0xA9A71c4eA67f8ff41A4639f71CFc5E79611BBf30](https://basescan.org/address/0xA9A71c4eA67f8ff41A4639f71CFc5E79611BBf30) |
 
@@ -26,9 +26,9 @@
 | Contract        | Address                                                                                                               |
 | --------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Appraiser       | [0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad](https://basescan.org/address/0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad) |
-| Billing         | [0xA44685E909e61072271937871Ca93B43fA7fa654](https://basescan.org/address/0xA44685E909e61072271937871Ca93B43fA7fa654) |
-| Hatchery        | [0xFd89e4A3D9B97f4dD117c29Fa71c25aD904c590a](https://basescan.org/address/0xFd89e4A3D9B97f4dD117c29Fa71c25aD904c590a) |
-| LootDistributor | [0x3e1B07E220B861e82c15f2E0844e9B0560Ed3067](https://basescan.org/address/0x3e1B07E220B861e82c15f2E0844e9B0560Ed3067) |
+| Billing         | [0x413962eCe8652A0FAfd14d1dC141A421E3DcC73E](https://basescan.org/address/0x413962eCe8652A0FAfd14d1dC141A421E3DcC73E) |
+| Hatchery        | [0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2](https://basescan.org/address/0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2) |
+| LootDistributor | [0xEdcA7eD2248928349Fb9c9289B48471BbDDDee87](https://basescan.org/address/0xEdcA7eD2248928349Fb9c9289B48471BbDDDee87) |
 
 ### Yield Legos
 
@@ -62,7 +62,7 @@
 
 | Contract             | Address                                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| AgentWrapperTemplate | [0x55eeA103abA26FA85fb1359E2D2e1961d1B46218](https://basescan.org/address/0x55eeA103abA26FA85fb1359E2D2e1961d1B46218) |
+| AgentWrapperTemplate | [0x882336D186774FcFaB4812f1B5C81747C4e37aA3](https://basescan.org/address/0x882336D186774FcFaB4812f1B5C81747C4e37aA3) |
 
 ### Registries
 
@@ -83,5 +83,5 @@
 
 | Contract  | Address                                                                                                               |
 | --------- | --------------------------------------------------------------------------------------------------------------------- |
-| LegoTools | [0x2edb54bE8c4F6Cde402CAAe86A809D434b3AFC66](https://basescan.org/address/0x2edb54bE8c4F6Cde402CAAe86A809D434b3AFC66) |
-| RipeLego  | [0xF3F436491e9a0d50F67eBED70D2cE5586F098fB4](https://basescan.org/address/0xF3F436491e9a0d50F67eBED70D2cE5586F098fB4) |
+| LegoTools | [0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F](https://basescan.org/address/0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F) |
+| RipeLego  | [0xC402449F5Dd3781d08cb357D9709505fDa8F3696](https://basescan.org/address/0xC402449F5Dd3781d08cb357D9709505fDa8F3696) |
