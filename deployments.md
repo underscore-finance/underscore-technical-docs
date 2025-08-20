@@ -30,7 +30,6 @@
 | Hatchery        | [0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2](https://basescan.org/address/0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2) |
 | LootDistributor | [0x2004c2293f9DeccA292934FA773f56860624B234](https://basescan.org/address/0x2004c2293f9DeccA292934FA773f56860624B234) |
 
-
 ### Yield Legos
 
 | Contract       | Address                                                                                                               |
