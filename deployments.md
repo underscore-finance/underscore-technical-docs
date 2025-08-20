@@ -28,7 +28,7 @@
 | Appraiser       | [0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad](https://basescan.org/address/0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad) |
 | Billing         | [0xA44685E909e61072271937871Ca93B43fA7fa654](https://basescan.org/address/0xA44685E909e61072271937871Ca93B43fA7fa654) |
 | Hatchery        | [0xFd89e4A3D9B97f4dD117c29Fa71c25aD904c590a](https://basescan.org/address/0xFd89e4A3D9B97f4dD117c29Fa71c25aD904c590a) |
-| LootDistributor | [0x3e1B07E220B861e82c15f2E0844e9B0560Ed3067](https://basescan.org/address/0x3e1B07E220B861e82c15f2E0844e9B0560Ed3067) |
+| LootDistributor | [0x2004c2293f9DeccA292934FA773f56860624B234](https://basescan.org/address/0x2004c2293f9DeccA292934FA773f56860624B234) |
 
 ### Yield Legos
 
@@ -62,7 +62,8 @@
 
 | Contract             | Address                                                                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| AgentWrapperTemplate | [0x55eeA103abA26FA85fb1359E2D2e1961d1B46218](https://basescan.org/address/0x55eeA103abA26FA85fb1359E2D2e1961d1B46218) |
+| AgentWrapperTemplate | [0xe1d877C9160878F83EB8e996428C44e898BF414B](https://basescan.org/address/0xe1d877C9160878F83EB8e996428C44e898BF414B) |
+| SignatureHelper      | [0x4586793C8a53bdcE44E8726d4eFeDAC35EdAbd4c](https://basescan.org/address/0x4586793C8a53bdcE44E8726d4eFeDAC35EdAbd4c) |
 
 ### Registries
 
@@ -76,7 +77,7 @@
 
 | Contract         | Address                                                                                                               |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
-| SwitchboardAlpha | [0x2256122FCb6F9789aa356F387435F545c3C52ba5](https://basescan.org/address/0x2256122FCb6F9789aa356F387435F545c3C52ba5) |
+| SwitchboardAlpha | [0x6625ED055cBfc9AE7111446DA505883A7f24620A](https://basescan.org/address/0x6625ED055cBfc9AE7111446DA505883A7f24620A) |
 | SwitchboardBravo | [0xf1F5938559884D3c54400b417292B93cd81C368c](https://basescan.org/address/0xf1F5938559884D3c54400b417292B93cd81C368c) |
 
 ### Other Legos
