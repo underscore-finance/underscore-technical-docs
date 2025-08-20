@@ -77,7 +77,7 @@
 
 | Contract         | Address                                                                                                               |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
-| SwitchboardAlpha | [0x6625ED055cBfc9AE7111446DA505883A7f24620A](https://basescan.org/address/0x6625ED055cBfc9AE7111446DA505883A7f24620A) |
+| SwitchboardAlpha | [0x90B138306ab1fb8d23372d104594e8A6BD7848D4](https://basescan.org/address/0x90B138306ab1fb8d23372d104594e8A6BD7848D4) |
 | SwitchboardBravo | [0xf1F5938559884D3c54400b417292B93cd81C368c](https://basescan.org/address/0xf1F5938559884D3c54400b417292B93cd81C368c) |
 
 ### Other Legos
