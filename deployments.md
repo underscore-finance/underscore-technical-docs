@@ -40,6 +40,7 @@
 | FluidLego      | [0x4719731fC7c8A3e17CB3e1EadD4412692432B404](https://basescan.org/address/0x4719731fC7c8A3e17CB3e1EadD4412692432B404) |
 | MoonwellLego   | [0x9CdE6b17b88432734f64E760B5Dfbba372b4975F](https://basescan.org/address/0x9CdE6b17b88432734f64E760B5Dfbba372b4975F) |
 | MorphoLego     | [0xd7a412C42c7430802e2A60F8145c36A4c6d0bA84](https://basescan.org/address/0xd7a412C42c7430802e2A60F8145c36A4c6d0bA84) |
+| YoLego         | [0x0E4289498cbc10730F232eC2Ad158D0D562178E6](https://basescan.org/address/0x0E4289498cbc10730F232eC2Ad158D0D562178E6) |
 
 ### DEX Legos
 
