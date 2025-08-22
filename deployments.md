@@ -28,7 +28,7 @@
 | Appraiser       | [0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad](https://basescan.org/address/0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad) |
 | Billing         | [0x413962eCe8652A0FAfd14d1dC141A421E3DcC73E](https://basescan.org/address/0x413962eCe8652A0FAfd14d1dC141A421E3DcC73E) |
 | Hatchery        | [0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2](https://basescan.org/address/0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2) |
-| LootDistributor | [0x2004c2293f9DeccA292934FA773f56860624B234](https://basescan.org/address/0x2004c2293f9DeccA292934FA773f56860624B234) |
+| LootDistributor | [0xa0A342329D2dDbc1a3b8Fa791223e1eBD61fB30e](https://basescan.org/address/0xa0A342329D2dDbc1a3b8Fa791223e1eBD61fB30e) |
 
 ### Yield Legos
 
@@ -82,7 +82,8 @@
 
 ### Other Legos
 
-| Contract  | Address                                                                                                               |
-| --------- | --------------------------------------------------------------------------------------------------------------------- |
-| LegoTools | [0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F](https://basescan.org/address/0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F) |
-| RipeLego  | [0xC402449F5Dd3781d08cb357D9709505fDa8F3696](https://basescan.org/address/0xC402449F5Dd3781d08cb357D9709505fDa8F3696) |
+| Contract     | Address                                                                                                               |
+| ------------ | --------------------------------------------------------------------------------------------------------------------- |
+| LegoTools    | [0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F](https://basescan.org/address/0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F) |
+| RipeLego     | [0xC402449F5Dd3781d08cb357D9709505fDa8F3696](https://basescan.org/address/0xC402449F5Dd3781d08cb357D9709505fDa8F3696) |
+| UndyRewards  | [0xB99D44C321356B24E36542B1BbEE9C549BCc9607](https://basescan.org/address/0xB99D44C321356B24E36542B1BbEE9C549BCc9607) |
