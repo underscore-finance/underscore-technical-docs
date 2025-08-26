@@ -41,6 +41,7 @@
 | MoonwellLego   | [0x9CdE6b17b88432734f64E760B5Dfbba372b4975F](https://basescan.org/address/0x9CdE6b17b88432734f64E760B5Dfbba372b4975F) |
 | MorphoLego     | [0xd7a412C42c7430802e2A60F8145c36A4c6d0bA84](https://basescan.org/address/0xd7a412C42c7430802e2A60F8145c36A4c6d0bA84) |
 | YoLego         | [0x0E4289498cbc10730F232eC2Ad158D0D562178E6](https://basescan.org/address/0x0E4289498cbc10730F232eC2Ad158D0D562178E6) |
+| TokemakLego    | [0x6Dc92E63654DAAE7514e52be91758Cfc27D38364](https://basescan.org/address/0x6Dc92E63654DAAE7514e52be91758Cfc27D38364) |
 
 ### DEX Legos
 
