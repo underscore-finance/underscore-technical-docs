@@ -87,5 +87,5 @@
 | Contract     | Address                                                                                                               |
 | ------------ | --------------------------------------------------------------------------------------------------------------------- |
 | LegoTools    | [0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F](https://basescan.org/address/0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F) |
-| RipeLego     | [0xC402449F5Dd3781d08cb357D9709505fDa8F3696](https://basescan.org/address/0xC402449F5Dd3781d08cb357D9709505fDa8F3696) |
-| UndyRewards  | [0xB99D44C321356B24E36542B1BbEE9C549BCc9607](https://basescan.org/address/0xB99D44C321356B24E36542B1BbEE9C549BCc9607) |
+| RipeLego     | [0x8C4068A3F45159Dfe548B573AdEE7fB1451502E2](https://basescan.org/address/0x8C4068A3F45159Dfe548B573AdEE7fB1451502E2) |
+| UndyRewards  | [0x9cd3090F083f326E5e29b224F1798622A2a073e7](https://basescan.org/address/0x9cd3090F083f326E5e29b224F1798622A2a073e7) |
