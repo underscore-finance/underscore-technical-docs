@@ -25,33 +25,35 @@
 
 | Contract        | Address                                                                                                               |
 | --------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Appraiser       | [0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad](https://basescan.org/address/0x50B32Df18452986f35Cb5B3d59B2Ea6C101ab2ad) |
+| Appraiser       | [0x212652d44EA7A1642c4F8c9De6F7F3a62ff639E5](https://basescan.org/address/0x212652d44EA7A1642c4F8c9De6F7F3a62ff639E5) |
 | Billing         | [0x413962eCe8652A0FAfd14d1dC141A421E3DcC73E](https://basescan.org/address/0x413962eCe8652A0FAfd14d1dC141A421E3DcC73E) |
 | Hatchery        | [0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2](https://basescan.org/address/0xCCE416b5050F628C85A57a817F168C1a7Af8D4d2) |
-| LootDistributor | [0xa0A342329D2dDbc1a3b8Fa791223e1eBD61fB30e](https://basescan.org/address/0xa0A342329D2dDbc1a3b8Fa791223e1eBD61fB30e) |
+| LootDistributor | [0x2D775AfA205729b8e74F9215611Ed700f564910C](https://basescan.org/address/0x2D775AfA205729b8e74F9215611Ed700f564910C) |
 
 ### Yield Legos
 
-| Contract       | Address                                                                                                               |
-| -------------- | --------------------------------------------------------------------------------------------------------------------- |
-| AaveV3Lego     | [0xb7401d91f1586474164B6c6Df328E3C3A5f24649](https://basescan.org/address/0xb7401d91f1586474164B6c6Df328E3C3A5f24649) |
-| CompoundV3Lego | [0x5Dec90961280605Dd9f3BA19dB0ad57459a86A61](https://basescan.org/address/0x5Dec90961280605Dd9f3BA19dB0ad57459a86A61) |
-| EulerLego      | [0x22D16D820c20492597caDb6e36db976Ca16c4156](https://basescan.org/address/0x22D16D820c20492597caDb6e36db976Ca16c4156) |
-| FluidLego      | [0x4719731fC7c8A3e17CB3e1EadD4412692432B404](https://basescan.org/address/0x4719731fC7c8A3e17CB3e1EadD4412692432B404) |
-| MoonwellLego   | [0x9CdE6b17b88432734f64E760B5Dfbba372b4975F](https://basescan.org/address/0x9CdE6b17b88432734f64E760B5Dfbba372b4975F) |
-| MorphoLego     | [0xd7a412C42c7430802e2A60F8145c36A4c6d0bA84](https://basescan.org/address/0xd7a412C42c7430802e2A60F8145c36A4c6d0bA84) |
-| YoLego         | [0x0E4289498cbc10730F232eC2Ad158D0D562178E6](https://basescan.org/address/0x0E4289498cbc10730F232eC2Ad158D0D562178E6) |
-| TokemakLego    | [0x6Dc92E63654DAAE7514e52be91758Cfc27D38364](https://basescan.org/address/0x6Dc92E63654DAAE7514e52be91758Cfc27D38364) |
+| Contract   | Address                                                                                                               |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| AaveV3     | [0x256f0f254B44C69e431C5eaFbB9A86F85DA1d1D3](https://basescan.org/address/0x256f0f254B44C69e431C5eaFbB9A86F85DA1d1D3) |
+| CompoundV3 | [0xAB7518D8b69067AC82F50B29867B24cA0a911f58](https://basescan.org/address/0xAB7518D8b69067AC82F50B29867B24cA0a911f58) |
+| Euler      | [0x6669A47A105d3c9F17b428838f3dD18A7D44E069](https://basescan.org/address/0x6669A47A105d3c9F17b428838f3dD18A7D44E069) |
+| Fluid      | [0x7C619b4d396BB4802B31738F9F1ef69d94D9DF45](https://basescan.org/address/0x7C619b4d396BB4802B31738F9F1ef69d94D9DF45) |
+| Moonwell   | [0x3F42489Ed3836DCBaF1A722c8403F4a6CB56fEc1](https://basescan.org/address/0x3F42489Ed3836DCBaF1A722c8403F4a6CB56fEc1) |
+| Morpho     | [0x77EDfc58AF0C52D8a77B1d0630a4284cB1752e1E](https://basescan.org/address/0x77EDfc58AF0C52D8a77B1d0630a4284cB1752e1E) |
+| 40Acres    | [0xea19B48ae835CC6198ecfCb36Fe710f6dAAdFA91](https://basescan.org/address/0xea19B48ae835CC6198ecfCb36Fe710f6dAAdFA91) |
+| Wasabi     | [0x2b993B00B44095ec52c5BA456551022f0B9ca6D4](https://basescan.org/address/0x2b993B00B44095ec52c5BA456551022f0B9ca6D4) |
+| Avantis    | [0x0b6DF4b22891139a17588523cc1AF068Ecf03D35](https://basescan.org/address/0x0b6DF4b22891139a17588523cc1AF068Ecf03D35) |
+| SkyPsm     | [0x8cC1729066d5fEaDe4C9326C3f001c42bEFD57EB](https://basescan.org/address/0x8cC1729066d5fEaDe4C9326C3f001c42bEFD57EB) |
 
 ### DEX Legos
 
-| Contract           | Address                                                                                                               |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| AeroClassicLego    | [0x15099c548DDE962ca9Bf520A771fB523818261C3](https://basescan.org/address/0x15099c548DDE962ca9Bf520A771fB523818261C3) |
-| AeroSlipstreamLego | [0x680D5701F6f328C01eF0dad2B1E6eAD224a51D36](https://basescan.org/address/0x680D5701F6f328C01eF0dad2B1E6eAD224a51D36) |
-| CurveLego          | [0x01A8Fa2Dbd240f197C820DE22e279150edE5BCF4](https://basescan.org/address/0x01A8Fa2Dbd240f197C820DE22e279150edE5BCF4) |
-| UniswapV2Lego      | [0xadB9aa252dD6163f4958443b414177248435c0EC](https://basescan.org/address/0xadB9aa252dD6163f4958443b414177248435c0EC) |
-| UniswapV3Lego      | [0x804EC0b82525DE4EA25Bc777a652e8A5c0A97249](https://basescan.org/address/0x804EC0b82525DE4EA25Bc777a652e8A5c0A97249) |
+| Contract       | Address                                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------------------- |
+| AeroClassic    | [0x5Decf97EA12AaBFF0e4E5810F6fa2C920d640245](https://basescan.org/address/0x5Decf97EA12AaBFF0e4E5810F6fa2C920d640245) |
+| AeroSlipstream | [0xC626C1DaEbe71CC4e51028eDABE69f13b6362248](https://basescan.org/address/0xC626C1DaEbe71CC4e51028eDABE69f13b6362248) |
+| Curve          | [0x4e0C4B96FAdc84D41144C1aE868aA1411c1d0743](https://basescan.org/address/0x4e0C4B96FAdc84D41144C1aE868aA1411c1d0743) |
+| UniswapV2      | [0x33F73b46Ba59cC8B7a1fC807076d4686A8364ce6](https://basescan.org/address/0x33F73b46Ba59cC8B7a1fC807076d4686A8364ce6) |
+| UniswapV3      | [0xda8C08B95B79E450BDE507a33C0BdcF5562691cB](https://basescan.org/address/0xda8C08B95B79E450BDE507a33C0BdcF5562691cB) |
 
 ### Data
 
@@ -62,30 +64,47 @@
 
 ### Agent
 
-| Contract             | Address                                                                                                               |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| AgentWrapperTemplate | [0xe1d877C9160878F83EB8e996428C44e898BF414B](https://basescan.org/address/0xe1d877C9160878F83EB8e996428C44e898BF414B) |
-| SignatureHelper      | [0x4586793C8a53bdcE44E8726d4eFeDAC35EdAbd4c](https://basescan.org/address/0x4586793C8a53bdcE44E8726d4eFeDAC35EdAbd4c) |
+| Contract                | Address                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| AgentWrapperTemplate    | [0xe1d877C9160878F83EB8e996428C44e898BF414B](https://basescan.org/address/0xe1d877C9160878F83EB8e996428C44e898BF414B) |
+| SignatureHelper         | [0x4586793C8a53bdcE44E8726d4eFeDAC35EdAbd4c](https://basescan.org/address/0x4586793C8a53bdcE44E8726d4eFeDAC35EdAbd4c) |
+| EarnVaultAgent          | [0x6B014c7BE0fCA7801133Db96737378CCE85230a7](https://basescan.org/address/0x6B014c7BE0fCA7801133Db96737378CCE85230a7) |
+| EarnVaultAgentSigHelper | [0x2E9e0BB2A734d0B025843FAf27CbfF648E848F8B](https://basescan.org/address/0x2E9e0BB2A734d0B025843FAf27CbfF648E848F8B) |
 
 ### Registries
 
-| Contract    | Address                                                                                                               |
-| ----------- | --------------------------------------------------------------------------------------------------------------------- |
-| UndyHq      | [0x44Cf3c4f000DFD76a35d03298049D37bE688D6F9](https://basescan.org/address/0x44Cf3c4f000DFD76a35d03298049D37bE688D6F9) |
-| LegoBook    | [0xEaf30ef8a98055981a67222E9088b4dE90B0924A](https://basescan.org/address/0xEaf30ef8a98055981a67222E9088b4dE90B0924A) |
-| Switchboard | [0xe52A6790fC8210DE16847f1FaF55A6146c0BfC7e](https://basescan.org/address/0xe52A6790fC8210DE16847f1FaF55A6146c0BfC7e) |
+| Contract      | Address                                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------------------------- |
+| UndyHq        | [0x44Cf3c4f000DFD76a35d03298049D37bE688D6F9](https://basescan.org/address/0x44Cf3c4f000DFD76a35d03298049D37bE688D6F9) |
+| LegoBook      | [0x9788f0D9D1A6577F685972B066b4Db2D73fEd8e3](https://basescan.org/address/0x9788f0D9D1A6577F685972B066b4Db2D73fEd8e3) |
+| Switchboard   | [0xe52A6790fC8210DE16847f1FaF55A6146c0BfC7e](https://basescan.org/address/0xe52A6790fC8210DE16847f1FaF55A6146c0BfC7e) |
+| VaultRegistry | [0xC64A779FE55673F93F647F1E2A30B3C3a9A25b64](https://basescan.org/address/0xC64A779FE55673F93F647F1E2A30B3C3a9A25b64) |
 
 ### Config
 
 | Contract         | Address                                                                                                               |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------- |
-| SwitchboardAlpha | [0x90B138306ab1fb8d23372d104594e8A6BD7848D4](https://basescan.org/address/0x90B138306ab1fb8d23372d104594e8A6BD7848D4) |
+| SwitchboardAlpha | [0xb7622CB741C2B26E59e262604d941C50D309C358](https://basescan.org/address/0xb7622CB741C2B26E59e262604d941C50D309C358) |
 | SwitchboardBravo | [0xf1F5938559884D3c54400b417292B93cd81C368c](https://basescan.org/address/0xf1F5938559884D3c54400b417292B93cd81C368c) |
+| SwitchboardBravo | [0xAb0e52dDBcF376f6716Dd6187861FC3551518987](https://basescan.org/address/0xAb0e52dDBcF376f6716Dd6187861FC3551518987) |
 
 ### Other Legos
 
-| Contract     | Address                                                                                                               |
-| ------------ | --------------------------------------------------------------------------------------------------------------------- |
-| LegoTools    | [0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F](https://basescan.org/address/0x3F8aE1C72a2Ca223CAe3f3e3312DBee55C4C6d5F) |
-| RipeLego     | [0x8C4068A3F45159Dfe548B573AdEE7fB1451502E2](https://basescan.org/address/0x8C4068A3F45159Dfe548B573AdEE7fB1451502E2) |
-| UndyRewards  | [0x9cd3090F083f326E5e29b224F1798622A2a073e7](https://basescan.org/address/0x9cd3090F083f326E5e29b224F1798622A2a073e7) |
+| Contract       | Address                                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------------------- |
+| LegoTools      | [0x9236af092494C91Da80364C8Df3557FB05C0094E](https://basescan.org/address/0x9236af092494C91Da80364C8Df3557FB05C0094E) |
+| RipeLego       | [0xf8190935c8682d5f802A0b4AF0C782AcEb9ecb56](https://basescan.org/address/0xf8190935c8682d5f802A0b4AF0C782AcEb9ecb56) |
+| UnderscoreLego | [0xB3a04D48a85d052496a6ee3Fad28A557717C220a](https://basescan.org/address/0xB3a04D48a85d052496a6ee3Fad28A557717C220a) |
+
+### Earn Vaults
+
+| Contract  | Address                                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------------------- |
+| UndyUsd   | [0xb33852cfd0c22647AAC501a6Af59Bc4210a686Bf](https://basescan.org/address/0xb33852cfd0c22647AAC501a6Af59Bc4210a686Bf) |
+| UndyEth   | [0x02981DB1a99A14912b204437e7a2E02679B57668](https://basescan.org/address/0x02981DB1a99A14912b204437e7a2E02679B57668) |
+| UndyBtc   | [0x3fb0fC9D3Ddd543AD1b748Ed2286a022f4638493](https://basescan.org/address/0x3fb0fC9D3Ddd543AD1b748Ed2286a022f4638493) |
+| UndyAero  | [0x96F1a7ce331F40afe866F3b707c223e377661087](https://basescan.org/address/0x96F1a7ce331F40afe866F3b707c223e377661087) |
+| UndyEurc  | [0x1cb8DAB80f19fC5Aca06C2552AECd79015008eA8](https://basescan.org/address/0x1cb8DAB80f19fC5Aca06C2552AECd79015008eA8) |
+| UndyUsds  | [0xaA0C35937a193ca81A64b3cFd5892dac384d22bB](https://basescan.org/address/0xaA0C35937a193ca81A64b3cFd5892dac384d22bB) |
+| UndyCbeth | [0xFe75aD75AD59a5c80de5AE0726Feee89567F080d](https://basescan.org/address/0xFe75aD75AD59a5c80de5AE0726Feee89567F080d) |
+| UndyGho   | [0x220b8B08c8CfD6975ed203AA26887c0AA5a8cf44](https://basescan.org/address/0x220b8B08c8CfD6975ed203AA26887c0AA5a8cf44) |
