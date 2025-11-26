@@ -1,6 +1,6 @@
 # Ledger Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/data/Ledger.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/data/Ledger.vy)
 
 ## Overview
 
@@ -52,7 +52,6 @@ The contract implements efficient storage patterns including indexed mappings fo
 |  |                                                                   | |
 |  |  Hatchery Only:                                                   | |
 |  |    • createUserWallet - Register new wallets                      | |
-|  |    • createAgent - Register new agents                            | |
 |  |                                                                   | |
 |  |  LootDistributor Only:                                            | |
 |  |    • setUserPoints - Update user points                           | |
@@ -479,73 +478,6 @@ def registerBackpackItem(_addr: address):
 #### Access
 
 Only callable by WalletBackpack
-
-## Agent Functions
-
-### `createAgent`
-
-Registers a new agent in the protocol.
-
-```vyper
-@external
-def createAgent(_agent: address):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_agent` | `address` | Agent address to register |
-
-#### Access
-
-Only callable by Hatchery
-
-### `getNumAgents`
-
-Gets the total number of registered agents.
-
-```vyper
-@view
-@external
-def getNumAgents() -> uint256:
-```
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `uint256` | Number of registered agents |
-
-#### Access
-
-Public view function
-
-### `isAgent`
-
-Checks if an address is a registered agent.
-
-```vyper
-@view
-@external
-def isAgent(_agent: address) -> bool:
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_agent` | `address` | Address to check |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `bool` | True if registered agent |
-
-#### Access
-
-Public view function
 
 ## Security Considerations
 

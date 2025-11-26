@@ -1,6 +1,6 @@
 # ChequeBook Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/ChequeBook.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/walletBackpack/ChequeBook.vy)
 
 ## Overview
 
@@ -619,21 +619,27 @@ The contract maintains period-based metrics:
 
 1. **Recipient Validation**:
    - Cannot be whitelisted address
+   - Cannot be existing payee
    - Cannot be wallet/owner/config
    - Must be valid address
 
-2. **Asset Validation**:
+2. **USD Value Requirement**:
+   - Cheque creation requires non-zero USD value
+   - Ensures proper tracking and limit enforcement
+
+3. **Asset Validation**:
    - Must be in allowed assets (if restricted)
    - Cannot be zero address
    - Amount must be non-zero
 
-3. **Timing Validation**:
+4. **Timing Validation**:
    - Unlock blocks ≤ MAX_UNLOCK_BLOCKS
    - Active duration ≤ MAX_EXPIRY_BLOCKS
    - Cooldowns ≤ period length
 
-4. **Permission Validation**:
-   - Global settings override individual
+5. **Permission Validation**:
+   - If `canBePulled` is set on cheque, global `canBePulled` must also be enabled
+   - If `canManagerPay` is set on cheque, global `canManagerPay` must also be enabled
    - Manager must be active
    - Proper permission flags required
 

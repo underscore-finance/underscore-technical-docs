@@ -1,6 +1,6 @@
 # AgentWrapper Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/agent/AgentWrapper.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/agent/AgentWrapper.vy)
 
 ## Overview
 

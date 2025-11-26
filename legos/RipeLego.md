@@ -1,6 +1,6 @@
 # RipeLego Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/RipeLego.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/legos/RipeLego.vy)
 
 ## Overview
 
@@ -9,6 +9,7 @@ RipeLego is a comprehensive Lego partner integration that connects the Underscor
 **Core Functions**:
 - **Yield Generation**: Deposit Green tokens into Savings Green for yield farming
 - **Debt Management**: Add/remove collateral, borrow, and repay debt on Ripe Protocol
+- **PSM Swaps**: Swap between USDC and GREEN/sGREEN via Endaoment PSM
 - **Rewards Claiming**: Claim RIPE token rewards from protocol participation
 - **Vault Token Management**: ERC-4626 compliant vault operations for Savings Green
 
@@ -124,6 +125,7 @@ MAX_TOKEN_PATH: constant(uint256) = 5
 - `RIPE_GREEN_TOKEN: public(immutable(address))` - GREEN token contract address
 - `RIPE_SAVINGS_GREEN: public(immutable(address))` - Savings Green vault token address
 - `RIPE_TOKEN: public(immutable(address))` - RIPE reward token address
+- `USDC: public(immutable(address))` - USDC token address (for PSM swaps)
 
 ## Constructor
 
@@ -136,6 +138,7 @@ Initializes RipeLego with Underscore Protocol and Ripe Protocol connections.
 def __init__(
     _undyHq: address,
     _ripeRegistry: address,
+    _usdc: address,
 ):
 ```
 
@@ -145,6 +148,7 @@ def __init__(
 |------|------|-------------|
 | `_undyHq` | `address` | UndyHq contract address for Underscore Protocol |
 | `_ripeRegistry` | `address` | Ripe Protocol registry contract address |
+| `_usdc` | `address` | USDC token address (for PSM swaps) |
 
 #### Returns
 
@@ -160,7 +164,8 @@ Called only once during contract deployment.
 ripe_lego = boa.load(
     "contracts/legos/RipeLego.vy",
     undy_hq.address,
-    ripe_registry.address
+    ripe_registry.address,
+    usdc.address
 )
 ```
 
@@ -962,11 +967,87 @@ def removeAssetOpportunity(_asset: address, _vaultAddr: address):
 - Currently implemented as pass-through functions
 - Asset registration handled automatically during operations
 
+## PSM Swap Functions
+
+### `swapTokens`
+
+Swaps between USDC and GREEN/Savings GREEN via the Endaoment PSM (Peg Stability Module).
+
+```vyper
+@external
+def swapTokens(
+    _amountIn: uint256,
+    _minAmountOut: uint256,
+    _tokenPath: DynArray[address, MAX_TOKEN_PATH],
+    _poolPath: DynArray[address, MAX_TOKEN_PATH - 1],
+    _recipient: address,
+    _miniAddys: ws.MiniAddys = empty(ws.MiniAddys),
+) -> (uint256, uint256, uint256):
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `_amountIn` | `uint256` | Amount of input token |
+| `_minAmountOut` | `uint256` | Minimum output amount (slippage protection) |
+| `_tokenPath` | `DynArray[address, 5]` | Token path (must be exactly 2 tokens) |
+| `_poolPath` | `DynArray[address, 4]` | Pool path (unused for PSM) |
+| `_recipient` | `address` | Address to receive output tokens |
+| `_miniAddys` | `ws.MiniAddys` | Mini address struct |
+
+#### Returns
+
+| Type | Description |
+|------|-------------|
+| `uint256` | Actual input amount used |
+| `uint256` | Output amount received |
+| `uint256` | USD value of swap |
+
+#### Supported Swap Pairs
+
+- **USDC → GREEN**: Mint GREEN tokens from USDC
+- **USDC → Savings GREEN**: Mint sGREEN tokens from USDC
+- **GREEN → USDC**: Redeem GREEN tokens for USDC
+- **Savings GREEN → USDC**: Redeem sGREEN tokens for USDC
+
+#### Validation
+
+- Token path must be exactly 2 tokens
+- Tokens must be GREEN, Savings GREEN, or USDC
+- Cannot swap between GREEN variants (use depositForYield/withdrawFromYield instead)
+
+#### Events Emitted
+
+- `RipeEndaomentPsmSwap` - Contains tokenIn, tokenOut, amounts, USD value, and recipient
+
+#### Example Usage
+```python
+# Swap USDC to Savings GREEN
+amount_in, amount_out, usd_value = ripe_lego.swapTokens(
+    1000 * 10**6,           # 1000 USDC
+    990 * 10**18,           # Min 990 sGREEN (slippage)
+    [usdc.address, savings_green.address],
+    [],
+    user.address,
+    mini_addys
+)
+
+# Swap GREEN to USDC
+amount_in, amount_out, usd_value = ripe_lego.swapTokens(
+    500 * 10**18,           # 500 GREEN
+    495 * 10**6,            # Min 495 USDC
+    [green.address, usdc.address],
+    [],
+    user.address,
+    mini_addys
+)
+```
+
 ## Unimplemented Functions
 
-RipeLego includes placeholder implementations for DEX-related functions that are not supported:
+RipeLego includes placeholder implementations for other DEX-related functions:
 
-- `swapTokens()` - Returns (0, 0, 0)
 - `mintOrRedeemAsset()` - Returns (0, 0, False, 0)
 - `confirmMintOrRedeemAsset()` - Returns (0, 0)
 - `addLiquidity()` - Returns (empty(address), 0, 0, 0, 0)

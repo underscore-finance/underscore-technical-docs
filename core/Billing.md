@@ -1,6 +1,6 @@
 # Billing Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/Billing.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/Billing.vy)
 
 ## Overview
 
@@ -92,20 +92,15 @@ Billing implements the Department interface and integrates:
 - `HUNDRED_PERCENT: uint256 = 100_00` - 100% in basis points
 - `MAX_DEREGISTER_ASSETS: uint256 = 25` - Maximum assets to deregister per payment
 
-## Immutable Variables
-
-- `WETH: address` - Wrapped ETH address
-- `ETH: address` - ETH placeholder address
-
 ## Constructor
 
 ### `__init__`
 
-Initializes Billing with registry and token addresses.
+Initializes Billing with the UndyHq registry address.
 
 ```vyper
 @deploy
-def __init__(_undyHq: address, _wethAddr: address, _ethAddr: address):
+def __init__(_undyHq: address):
 ```
 
 #### Parameters
@@ -113,8 +108,6 @@ def __init__(_undyHq: address, _wethAddr: address, _ethAddr: address):
 | Name | Type | Description |
 |------|------|-------------|
 | `_undyHq` | `address` | UndyHq registry contract address |
-| `_wethAddr` | `address` | WETH token address |
-| `_ethAddr` | `address` | ETH placeholder address |
 
 #### Access
 
@@ -299,42 +292,6 @@ def canPullPaymentAsPayee(_userWallet: address, _payee: address) -> bool:
 #### Access
 
 Public view function
-
-## Utility Functions
-
-### `getAssetUsdValueConfig`
-
-Gets asset configuration for USD value calculations.
-
-```vyper
-@view
-@external
-def getAssetUsdValueConfig(_asset: address) -> AssetUsdValueConfig:
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_asset` | `address` | Asset to get configuration for |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `AssetUsdValueConfig` | Asset configuration struct |
-
-#### Access
-
-Public view function
-
-#### Returned Struct Contents
-- `legoId` - Protocol integration ID
-- `legoAddr` - Protocol integration address
-- `decimals` - Asset decimals
-- `staleBlocks` - Price staleness threshold
-- `isYieldAsset` - Whether asset is yield-bearing
-- `underlyingAsset` - Underlying asset for vaults
 
 ## Internal Payment Logic
 

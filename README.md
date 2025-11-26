@@ -55,37 +55,48 @@ Protocol state management and configuration systems.
 | [SwitchboardAlpha.vy](config/SwitchboardAlpha.md) | Configuration management for user wallets, assets, agents, and security with time-locked changes     |
 | [SwitchboardBravo.vy](config/SwitchboardBravo.md) | Operational management for fund recovery, loot adjustment, and maintenance functions                 |
 
+## Vaults
+
+Protocol-managed vault system for yield optimization and leveraged strategies.
+
+| Contract                                            | Description                                                                                              |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| [EarnVault.vy](vaults/EarnVault.md)                 | ERC-4626 compliant yield aggregation vault for passive yield optimization across multiple protocols      |
+| [EarnVaultWallet.vy](vaults/EarnVaultWallet.md)     | Internal wallet module for EarnVault handling yield position management and lego interactions            |
+| [LevgVault.vy](vaults/LevgVault.md)                 | ERC-4626 compliant leveraged yield vault enabling amplified returns through collateralized borrowing     |
+| [LevgVaultWallet.vy](vaults/LevgVaultWallet.md)     | Internal wallet module for LevgVault handling debt positions, collateral, and leverage operations        |
+| [LevgVaultHelper.vy](vaults/LevgVaultHelper.md)     | Utility contract providing leverage calculations, health factor monitoring, and position safety checks   |
+| [VaultErc20Token.vy](vaults/VaultErc20Token.md)     | Reusable ERC-20 token module for vault share tokens with mint/burn functionality                         |
+| [VaultRegistry.vy](vaults/VaultRegistry.md)        | Central registry for all Underscore vaults tracking vault types, underlying assets, and approval status  |
+
 ## Lego Partners
 
 Modular integrations with external DeFi protocols for yield generation and trading.
 
-### Core Lego Infrastructure
+### Lego Interfaces
 
-| Contract                           | Description                                                                                        |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------- |
-| [LegoTools.vy](legos/LegoTools.md) | Universal routing engine providing unified access to all Lego Partners with optimal path discovery |
-| [RipeLego.vy](legos/RipeLego.md)   | Integration with Ripe Protocol for yield farming, collateralized borrowing, and RIPE token rewards |
+All legos implement standardized interfaces for consistent behavior across protocols:
 
-### DEX Lego Partners
+| Interface                                                     | Description                                                                   |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [Yield Lego Interface](legos/interfaces/YieldLegoInterface.md) | Standard interface for yield protocol integrations (deposits, withdrawals, rewards) |
+| [DEX Lego Interface](legos/interfaces/DexLegoInterface.md)     | Standard interface for DEX integrations (swaps, liquidity, quotes)            |
 
-| Contract                                           | Description                                                                                            |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| [AeroClassic.vy](legos/dexes/AeroClassic.md)       | Integration with Aerodrome Classic AMM pools for token swapping and liquidity management               |
-| [AeroSlipstream.vy](legos/dexes/AeroSlipstream.md) | Integration with Aerodrome Slipstream (concentrated liquidity) for advanced trading and LP positioning |
-| [Curve.vy](legos/dexes/Curve.md)                   | Integration with Curve Finance supporting multiple pool types and optimized stable swaps               |
-| [UniswapV2.vy](legos/dexes/UniswapV2.md)           | Integration with Uniswap V2 AMM for token swapping and standard liquidity provision                    |
-| [UniswapV3.vy](legos/dexes/UniswapV3.md)           | Integration with Uniswap V3 for concentrated liquidity and NFT-based position management               |
+### Special Legos
 
-### Yield Lego Partners
+| Contract                                         | Description                                                                                           |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| [LegoTools.vy](legos/LegoTools.md)               | Universal routing engine providing unified access to all Lego Partners with optimal path discovery    |
+| [RipeLego.vy](legos/RipeLego.md)                 | Integration with Ripe Protocol for yield farming, collateralized borrowing, PSM swaps, and RIPE rewards |
+| [UnderscoreLego.vy](legos/UnderscoreLego.md)     | Integration with Underscore's own EarnVault system for depositing into managed yield strategies       |
 
-| Contract                                    | Description                                                                                                |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [AaveV3.vy](legos/yields/AaveV3.md)         | Integration with Aave V3 for interest-bearing aTokens with automatic yield accrual                         |
-| [CompoundV3.vy](legos/yields/CompoundV3.md) | Integration with Compound V3 (Compound III) for single-asset borrowing markets and COMP rewards            |
-| [Euler.vy](legos/yields/Euler.md)           | Integration with Euler Protocol's ERC-4626 vaults for optimized lending with non-rebasing shares           |
-| [Fluid.vy](legos/yields/Fluid.md)           | Integration with Fluid Protocol's liquidity layer for dynamic yield optimization across markets            |
-| [Moonwell.vy](legos/yields/Moonwell.md)     | Integration with Moonwell Protocol for cross-chain lending markets with multi-asset reward distribution    |
-| [Morpho.vy](legos/yields/Morpho.md)         | Integration with Morpho Protocol's peer-to-peer layer for improved lending rates through MetaMorpho vaults |
+### Integrated Protocols
+
+**Yield Protocols**: Aave V3, Compound V3, Euler, Fluid, Moonwell, Morpho, ExtraFi, Sky PSM, Wasabi, 40 Acres, Avantis
+
+**DEX Protocols**: Uniswap V2, Uniswap V3, Aerodrome Classic, Aerodrome Slipstream, Curve
+
+> See [Yield Lego Interface](legos/interfaces/YieldLegoInterface.md) and [DEX Lego Interface](legos/interfaces/DexLegoInterface.md) for the common functions all legos implement.
 
 ### Lego Data Management
 

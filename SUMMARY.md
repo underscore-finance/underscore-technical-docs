@@ -4,7 +4,7 @@
 
 - [Underscore Developers](./README.md)
 - [Deployed Contracts](./deployments.md)
-- [Github](https://github.com/underscore-finance/underscore-protocol)
+- [Github](https://github.com/underscore-finance/underscore)
 - [User Docs](https://docs.underscore.finance/)
 
 ## User Wallet
@@ -21,6 +21,16 @@
 - [Paymaster](./walletBackpack/Paymaster.md)
 - [Sentinel](./walletBackpack/Sentinel.md)
 
+## Vaults
+
+- [EarnVault](./vaults/EarnVault.md)
+- [EarnVaultWallet](./vaults/EarnVaultWallet.md)
+- [LevgVault](./vaults/LevgVault.md)
+- [LevgVaultWallet](./vaults/LevgVaultWallet.md)
+- [LevgVaultHelper](./vaults/LevgVaultHelper.md)
+- [VaultErc20Token](./vaults/VaultErc20Token.md)
+- [VaultRegistry](./vaults/VaultRegistry.md)
+
 ## Core
 
 - [Appraiser](./core/Appraiser.md)
@@ -28,22 +38,16 @@
 - [Hatchery](./core/Hatchery.md)
 - [LootDistributor](./core/LootDistributor.md)
 
-## Yield Legos
+## Lego Interfaces
 
-- [AaveV3](./legos/yields/AaveV3.md)
-- [CompoundV3](./legos/yields/CompoundV3.md)
-- [Euler](./legos/yields/Euler.md)
-- [Fluid](./legos/yields/Fluid.md)
-- [Moonwell](./legos/yields/Moonwell.md)
-- [Morpho](./legos/yields/Morpho.md)
+- [Yield Lego Interface](./legos/interfaces/YieldLegoInterface.md)
+- [DEX Lego Interface](./legos/interfaces/DexLegoInterface.md)
 
-## DEX Legos
+## Special Legos
 
-- [AeroClassic](./legos/dexes/AeroClassic.md)
-- [AeroSlipstream](./legos/dexes/AeroSlipstream.md)
-- [Curve](./legos/dexes/Curve.md)
-- [UniswapV2](./legos/dexes/UniswapV2.md)
-- [UniswapV3](./legos/dexes/UniswapV3.md)
+- [RipeLego](./legos/RipeLego.md)
+- [UnderscoreLego](./legos/UnderscoreLego.md)
+- [LegoTools](./legos/LegoTools.md)
 
 ## Data
 
@@ -77,8 +81,3 @@
 
 - [SwitchboardAlpha](./config/SwitchboardAlpha.md)
 - [SwitchboardBravo](./config/SwitchboardBravo.md)
-
-## Other
-
-- [LegoTools](./legos/LegoTools.md)
-- [RipeLego](./legos/RipeLego.md)

@@ -1,6 +1,6 @@
 # TimeLock Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/Timelock.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/modules/Timelock.vy)
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Sentinel Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/Sentinel.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/walletBackpack/Sentinel.vy)
 
 ## Overview
 
@@ -52,7 +52,7 @@ The contract implements sophisticated validation logic including period-based tr
 |  |   • EARN_DEPOSIT           → canManageYield                       | |
 |  |   • EARN_WITHDRAW          → canManageYield                       | |
 |  |   • EARN_REBALANCE         → canManageYield                       | |
-|  |   • SWAP                   → canBuyAndSell                        | |
+|  |   • SWAP                   → canBuyAndSell + SwapPerms            | |
 |  |   • MINT_REDEEM            → canBuyAndSell                        | |
 |  |   • CONFIRM_MINT_REDEEM    → canBuyAndSell                        | |
 |  |   • ADD_COLLATERAL         → canManageDebt                        | |
@@ -67,6 +67,18 @@ The contract implements sophisticated validation logic including period-based tr
 |  +-------------------------------------------------------------------+ |
 |                                                                         |
 |  +-------------------------------------------------------------------+ |
+|  |                     Swap Permission Controls                       | |
+|  |                        (SwapPerms struct)                          | |
+|  |                                                                   | |
+|  |  mustHaveUsdValue      - Require price data for swaps             | |
+|  |  maxNumSwapsPerPeriod  - Max swap count per period                | |
+|  |  maxSlippage           - Maximum loss allowed (basis points)      | |
+|  |                                                                   | |
+|  |  Slippage Formula:                                                | |
+|  |    toUsdValue >= fromUsdValue * (10000 - maxSlippage) / 10000    | |
+|  +-------------------------------------------------------------------+ |
+|                                                                         |
+|  +-------------------------------------------------------------------+ |
 |  |                      Period-Based Tracking                         | |
 |  |                                                                   | |
 |  |  Automatic Reset Logic:                                            | |
@@ -76,6 +88,7 @@ The contract implements sophisticated validation logic including period-based tr
 |  |                                                                   | |
 |  |  Tracked Metrics:                                                  | |
 |  |    • numTxsInPeriod - Transaction count                            | |
+|  |    • numSwapsInPeriod - Swap count (for SwapPerms)                 | |
 |  |    • totalUsdValueInPeriod - USD value sum                         | |
 |  |    • totalUnitsInPeriod - Token units (payees)                    | |
 |  |    • lastTxBlock - For cooldown enforcement                        | |
@@ -88,6 +101,7 @@ The contract implements sophisticated validation logic including period-based tr
 - `MAX_CONFIG_ASSETS: uint256 = 40` - Maximum allowed assets per configuration
 - `MAX_ASSETS: uint256 = 10` - Maximum assets per transaction
 - `MAX_LEGOS: uint256 = 10` - Maximum protocol IDs per transaction
+- `HUNDRED_PERCENT: uint256 = 100_00` - Basis point denominator (100%)
 
 ## Constructor
 
@@ -220,17 +234,25 @@ Public view function
 
 ### Post-Action Validation
 
-#### `checkManagerUsdLimits`
+#### `canManagerFinishTx`
 
-Validates USD value limits after transaction.
+Comprehensive post-transaction validation including USD limits, vault approvals, and swap validations.
 
 ```vyper
 @view
 @external
-def checkManagerUsdLimits(
+def canManagerFinishTx(
     _user: address,
     _manager: address,
     _txUsdValue: uint256,
+    _underlyingAsset: address,
+    _vaultToken: address,
+    _shouldCheckSwap: bool,
+    _specificSwapPerms: wcs.SwapPerms,
+    _globalSwapPerms: wcs.SwapPerms,
+    _fromAssetUsdValue: uint256,
+    _toAssetUsdValue: uint256,
+    _vaultRegistry: address,
 ) -> bool:
 ```
 
@@ -241,30 +263,51 @@ def checkManagerUsdLimits(
 | `_user` | `address` | User wallet address |
 | `_manager` | `address` | Manager address |
 | `_txUsdValue` | `uint256` | Transaction USD value |
+| `_underlyingAsset` | `address` | Asset for vault approval check |
+| `_vaultToken` | `address` | Vault token for approval check |
+| `_shouldCheckSwap` | `bool` | Whether to apply swap validations |
+| `_specificSwapPerms` | `SwapPerms` | Manager's swap permissions |
+| `_globalSwapPerms` | `SwapPerms` | Global swap permissions |
+| `_fromAssetUsdValue` | `uint256` | USD value of input asset (for slippage) |
+| `_toAssetUsdValue` | `uint256` | USD value of output asset (for slippage) |
+| `_vaultRegistry` | `address` | VaultRegistry for approval checks |
 
 ##### Returns
 
 | Type | Description |
 |------|-------------|
-| `bool` | True if within limits |
+| `bool` | True if transaction can complete |
 
-##### Access
+##### Validations Performed
 
-Public view function
+1. **USD Limits** - Checks per-tx, per-period, and lifetime caps
+2. **Vault Token Approval** - If `onlyApprovedYieldOpps` is set
+3. **Swap USD Value Requirement** - If `mustHaveUsdValue` is set
+4. **Swap Count Limit** - Against `maxNumSwapsPerPeriod`
+5. **Slippage Protection** - Against `maxSlippage` basis points
 
-#### `checkManagerUsdLimitsAndUpdateData`
+#### `checkManagerLimitsPostTx`
 
-Validates limits and returns updated tracking data.
+Validates limits and returns updated tracking data with full swap validation.
 
 ```vyper
 @view
 @external
-def checkManagerUsdLimitsAndUpdateData(
+def checkManagerLimitsPostTx(
     _txUsdValue: uint256,
     _specificLimits: wcs.ManagerLimits,
     _globalLimits: wcs.ManagerLimits,
     _managerPeriod: uint256,
     _managerData: wcs.ManagerData,
+    _requiresVaultApproval: bool,
+    _underlyingAsset: address,
+    _vaultToken: address,
+    _shouldCheckSwap: bool,
+    _specificSwapPerms: wcs.SwapPerms,
+    _globalSwapPerms: wcs.SwapPerms,
+    _fromAssetUsdValue: uint256,
+    _toAssetUsdValue: uint256,
+    _vaultRegistry: address,
 ) -> (bool, wcs.ManagerData):
 ```
 
@@ -277,32 +320,42 @@ def checkManagerUsdLimitsAndUpdateData(
 | `_globalLimits` | `ManagerLimits` | Global limits |
 | `_managerPeriod` | `uint256` | Period length |
 | `_managerData` | `ManagerData` | Current tracking data |
+| `_requiresVaultApproval` | `bool` | Whether to check vault approval |
+| `_underlyingAsset` | `address` | Asset for vault check |
+| `_vaultToken` | `address` | Vault token for check |
+| `_shouldCheckSwap` | `bool` | Apply swap validations |
+| `_specificSwapPerms` | `SwapPerms` | Manager's swap permissions |
+| `_globalSwapPerms` | `SwapPerms` | Global swap permissions |
+| `_fromAssetUsdValue` | `uint256` | Input asset USD value |
+| `_toAssetUsdValue` | `uint256` | Output asset USD value |
+| `_vaultRegistry` | `address` | VaultRegistry address |
 
 ##### Returns
 
 | Type | Description |
 |------|-------------|
 | `bool` | Whether transaction is valid |
-| `ManagerData` | Updated tracking data |
-
-##### Access
-
-Public view function
+| `ManagerData` | Updated tracking data (incremented counters) |
 
 ##### Example Usage
 ```python
-# Check and update manager data
-valid, new_data = sentinel.checkManagerUsdLimitsAndUpdateData(
-    tx_usd_value=1000 * 10**6,  # $1000
+# Post-swap validation with slippage check
+valid, new_data = sentinel.checkManagerLimitsPostTx(
+    tx_usd_value=1000 * 10**6,
     specific_limits=manager_limits,
     global_limits=global_limits,
     manager_period=1000,
-    manager_data=current_data
+    manager_data=current_data,
+    requires_vault_approval=False,
+    underlying_asset=empty(address),
+    vault_token=empty(address),
+    should_check_swap=True,
+    specific_swap_perms=manager_swap_perms,
+    global_swap_perms=global_swap_perms,
+    from_asset_usd_value=1000 * 10**6,  # Input: $1000
+    to_asset_usd_value=995 * 10**6,      # Output: $995 (0.5% slippage)
+    vault_registry=empty(address)
 )
-
-if valid:
-    # Save new_data to storage
-    save_manager_data(manager, new_data)
 ```
 
 ## Payee Validation Functions
@@ -467,10 +520,77 @@ The contract maps action types to specific permissions:
 |----------------|--------------|-------------------|
 | Transfers | TRANSFER, PAY_CHEQUE | canTransfer |
 | Yield | EARN_DEPOSIT, EARN_WITHDRAW, EARN_REBALANCE | canManageYield |
-| Trading | SWAP, MINT_REDEEM, CONFIRM_MINT_REDEEM | canBuyAndSell |
+| Trading | SWAP, MINT_REDEEM, CONFIRM_MINT_REDEEM | canBuyAndSell + SwapPerms |
 | Debt | ADD_COLLATERAL, REMOVE_COLLATERAL, BORROW, REPAY_DEBT | canManageDebt |
 | Liquidity | ADD_LIQ, REMOVE_LIQ, ADD_LIQ_CONC, REMOVE_LIQ_CONC | canManageLiq |
 | Rewards | REWARDS | canClaimRewards |
+
+### Swap Validation Logic
+
+Swaps have additional validation through the `SwapPerms` struct:
+
+#### USD Value Requirement (`_checkSwapHasUsdValue`)
+
+```vyper
+@pure
+@internal
+def _checkSwapHasUsdValue(_specific: wcs.SwapPerms, _global: wcs.SwapPerms, _fromUsdValue: uint256, _toUsdValue: uint256) -> bool:
+    # if either manager-specific or global requires USD values, enforce it
+    mustHaveUsdValue: bool = _specific.mustHaveUsdValue or _global.mustHaveUsdValue
+    if not mustHaveUsdValue:
+        return True # no requirement for USD values
+
+    # from and to assets must have USD values (non-zero)
+    return _fromUsdValue != 0 and _toUsdValue != 0
+```
+
+**Purpose**: Ensures price data is available before allowing swaps. Without valid prices, slippage cannot be calculated.
+
+#### Swap Count Limit (`_checkSwapCountLimit`)
+
+```vyper
+@pure
+@internal
+def _checkSwapCountLimit(_specific: wcs.SwapPerms, _global: wcs.SwapPerms, _data: wcs.ManagerData) -> bool:
+    # use manager-specific limit if set, otherwise use global
+    limit: uint256 = _specific.maxNumSwapsPerPeriod if _specific.maxNumSwapsPerPeriod != 0 else _global.maxNumSwapsPerPeriod
+    if limit == 0:
+        return True # no limit
+    return _data.numSwapsInPeriod < limit
+```
+
+**Purpose**: Limits the number of swaps a manager can execute per period, preventing excessive trading.
+
+#### Slippage Protection (`_hasAcceptableSlippage`)
+
+```vyper
+@pure
+@internal
+def _hasAcceptableSlippage(_specific: wcs.SwapPerms, _global: wcs.SwapPerms, _fromUsdValue: uint256, _toUsdValue: uint256) -> bool:
+    # use tighter (lower) slippage limit between manager and global
+    slippage: uint256 = _specific.maxSlippage
+    if slippage == 0 or (_global.maxSlippage != 0 and _global.maxSlippage < slippage):
+        slippage = _global.maxSlippage
+
+    if slippage == 0:
+        return True # no limit
+
+    # calculate minimum acceptable value (loss prevention)
+    # Formula: toUsdValue >= fromUsdValue * (10000 - slippage) / 10000
+    acceptablePercentage: uint256 = HUNDRED_PERCENT - slippage
+    minAcceptableValue: uint256 = (_fromUsdValue * acceptablePercentage) // HUNDRED_PERCENT
+    return _toUsdValue >= minAcceptableValue
+```
+
+**Purpose**: Prevents managers from executing swaps with excessive slippage/loss.
+
+**Example**:
+- Input: $1000 worth of tokens
+- `maxSlippage` = 100 (1% = 100 basis points)
+- Minimum acceptable output: $1000 × (10000 - 100) / 10000 = $990
+- Swap returning < $990 would be rejected
+
+**Important Dependency**: If `maxSlippage > 0`, then `mustHaveUsdValue` should be `True` (enforced during config validation in HighCommand). This ensures USD values are available for slippage calculation.
 
 ### Period Management
 
@@ -485,6 +605,7 @@ if data.periodStartBlock == 0:
 elif block.number >= data.periodStartBlock + period_length:
     # Reset counters
     data.numTxsInPeriod = 0
+    data.numSwapsInPeriod = 0  # Also reset swap counter
     data.totalUsdValueInPeriod = 0
     data.periodStartBlock = block.number
 ```

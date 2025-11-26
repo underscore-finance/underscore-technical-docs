@@ -1,6 +1,6 @@
 # UserWalletConfig Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/userWallet/UserWalletConfig.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/userWallet/UserWalletConfig.vy)
 
 ## Overview
 
@@ -374,13 +374,22 @@ action_data = wallet_config.checkSignerPermissionsAndGetBundle(
 )
 ```
 
-### `checkManagerUsdLimitsAndUpdateData`
+### `checkManagerLimitsPostTx`
 
-Validates manager USD limits and updates tracking data.
+Validates manager limits after a transaction and updates tracking data.
 
 ```vyper
 @external
-def checkManagerUsdLimitsAndUpdateData(_manager: address, _txUsdValue: uint256) -> bool:
+def checkManagerLimitsPostTx(
+    _manager: address,
+    _txUsdValue: uint256,
+    _underlyingAsset: address,
+    _vaultToken: address,
+    _shouldCheckSwap: bool,
+    _fromAssetUsdValue: uint256,
+    _toAssetUsdValue: uint256,
+    _vaultRegistry: address,
+) -> bool:
 ```
 
 #### Parameters
@@ -389,6 +398,12 @@ def checkManagerUsdLimitsAndUpdateData(_manager: address, _txUsdValue: uint256) 
 |------|------|-------------|
 | `_manager` | `address` | Manager address |
 | `_txUsdValue` | `uint256` | USD value of transaction |
+| `_underlyingAsset` | `address` | Underlying asset for vault validation |
+| `_vaultToken` | `address` | Vault token for approval validation |
+| `_shouldCheckSwap` | `bool` | Whether to validate swap permissions |
+| `_fromAssetUsdValue` | `uint256` | USD value of asset swapped from |
+| `_toAssetUsdValue` | `uint256` | USD value of asset swapped to |
+| `_vaultRegistry` | `address` | Vault registry for approval checks |
 
 #### Returns
 
@@ -399,6 +414,14 @@ def checkManagerUsdLimitsAndUpdateData(_manager: address, _txUsdValue: uint256) 
 #### Access
 
 Only callable by UserWallet
+
+#### Notes
+
+- Delegates validation to Sentinel contract
+- Checks USD value limits against manager-specific and global limits
+- Validates vault token approval if `onlyApprovedYieldOpps` is enabled
+- Validates swap permissions including slippage and frequency limits
+- Updates manager period tracking data
 
 ### `checkRecipientLimitsAndUpdateData`
 

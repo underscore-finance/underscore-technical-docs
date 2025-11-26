@@ -1,6 +1,6 @@
 # MissionControl Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/data/MissionControl.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/data/MissionControl.vy)
 
 ## Overview
 
@@ -11,9 +11,8 @@ MissionControl is the central configuration management contract for the Undersco
 - **Asset-Specific Settings**: Configure per-asset fees, yield parameters, and integration details
 - **Security Controls**: Manage creator whitelists, security signers, and locked addresses
 - **Fee Structure**: Define swap fees, rewards fees, and ambassador revenue shares
+- **Ledger Integration**: Retrieves vault token data from Ledger for yield asset calculations
 - **Dynamic Configuration**: Update settings through governance without contract upgrades via [SwitchboardAlpha](../config/SwitchboardAlpha.md) and [SwitchboardBravo](../config/SwitchboardBravo.md)
-
-The contract implements sophisticated configuration patterns including hierarchical settings with defaults and overrides, structured data for complex configurations, granular access control for updates, and view helpers for aggregated configurations.
 
 ## System Architecture Diagram
 
@@ -36,12 +35,21 @@ The contract implements sophisticated configuration patterns including hierarchi
 |  |    ├─> AssetConfig[asset] - Per-asset overrides                   | |
 |  |    ├─> Transaction fees (swap, rewards)                            | |
 |  |    ├─> Yield parameters (bonus ratios, fees)                      | |
-|  |    └─> Integration details (legoId, decimals)                     | |
+|  |    └─> Ambassador revenue shares                                   | |
 |  |                                                                   | |
 |  |  Precedence Rules:                                                | |
-|  |    1. Asset-specific config (if set)                              | |
+|  |    1. Asset-specific config (if hasConfig == true)                | |
 |  |    2. Global default config                                       | |
-|  |    3. Hard-coded fallback                                         | |
+|  +-------------------------------------------------------------------+ |
+|                                                                         |
+|  +-------------------------------------------------------------------+ |
+|  |                   Ledger Integration                              | |
+|  |                                                                   | |
+|  |  VaultToken Data (from Ledger):                                   | |
+|  |    • legoId - Which lego manages this vault token                 | |
+|  |    • underlyingAsset - Base asset for yield tokens                | |
+|  |    • decimals - Token decimals                                    | |
+|  |    • isRebasing - Whether token is rebasing                       | |
 |  +-------------------------------------------------------------------+ |
 |                                                                         |
 |  +-------------------------------------------------------------------+ |
@@ -57,21 +65,6 @@ The contract implements sophisticated configuration patterns including hierarchi
 |  |    • isLockedSigner - Prevent specific addresses from actions     | |
 |  |    • Switchboard-only updates for all settings                    | |
 |  +-------------------------------------------------------------------+ |
-|                                                                         |
-|  +-------------------------------------------------------------------+ |
-|  |                     Configuration Aggregation                      | |
-|  |                                                                   | |
-|  |  Helper Functions combine multiple configs:                        | |
-|  |                                                                   | |
-|  |  getUserWalletCreationConfig:                                     | |
-|  |    Merges UserWallet, Manager, Payee, Agent, Cheque configs       | |
-|  |                                                                   | |
-|  |  getLootDistroConfig:                                             | |
-|  |    Combines asset config with global defaults for distribution     | |
-|  |                                                                   | |
-|  |  getProfitCalcConfig / getAssetUsdValueConfig:                    | |
-|  |    Asset config with fallback to global defaults                  | |
-|  +-------------------------------------------------------------------+ |
 +-------------------------------------------------------------------------+
 ```
 
@@ -83,43 +76,248 @@ MissionControl implements the Department interface and integrates:
 
 ## Data Structures
 
-### Configuration Structs (from ConfigStructs interface)
+### ConfigStructs Interface Definitions
 
-**UserWalletConfig**: Global wallet settings including templates, trial funds, time locks, fees, and ambassador revenue shares
+#### UserWalletConfig
 
-**AssetConfig**: Per-asset configuration with protocol integration, decimals, fees, and yield parameters
+Global wallet settings including templates, fees, and yield parameters.
 
-**TxFees**: Transaction fee structure for swaps and rewards
+```vyper
+struct UserWalletConfig:
+    walletTemplate: address           # Template for new wallets
+    configTemplate: address           # Template for wallet configs
+    numUserWalletsAllowed: uint256    # Max wallets (0 = unlimited)
+    enforceCreatorWhitelist: bool     # Require whitelisted creators
+    minKeyActionTimeLock: uint256     # Min timelock for key actions
+    maxKeyActionTimeLock: uint256     # Max timelock for key actions
+    depositRewardsAsset: address      # Asset for deposit rewards
+    lootClaimCoolOffPeriod: uint256   # Cooldown between loot claims
+    txFees: TxFees                    # Transaction fee settings
+    ambassadorRevShare: AmbassadorRevShare  # Ambassador revenue shares
+    yieldConfig: YieldConfig          # Yield bonus settings
+```
 
-**AmbassadorRevShare**: Revenue share ratios for different action types
+#### AssetConfig
 
-**YieldConfig**: Yield asset parameters including bonus ratios and performance fees
+Per-asset configuration overrides.
 
-**AgentConfig**: Agent creation settings and templates
+```vyper
+struct AssetConfig:
+    hasConfig: bool                   # Whether this config is active
+    txFees: TxFees                    # Asset-specific fees
+    ambassadorRevShare: AmbassadorRevShare  # Asset-specific ambassador shares
+    yieldConfig: YieldConfig          # Asset-specific yield settings
+```
 
-**ManagerConfig**: Manager activation periods
+#### TxFees
 
-**PayeeConfig**: Payee activation periods
+Transaction fee structure.
 
-**ChequeConfig**: Cheque limits and timing parameters
+```vyper
+struct TxFees:
+    swapFee: uint256        # Fee on swaps (basis points)
+    stableSwapFee: uint256  # Fee on stablecoin swaps (basis points)
+    rewardsFee: uint256     # Fee on rewards claims (basis points)
+```
+
+#### AmbassadorRevShare
+
+Revenue share ratios for different action types.
+
+```vyper
+struct AmbassadorRevShare:
+    swapRatio: uint256      # Share of swap fees to ambassador
+    rewardsRatio: uint256   # Share of rewards fees to ambassador
+    yieldRatio: uint256     # Share of yield fees to ambassador
+```
+
+#### YieldConfig
+
+Yield asset parameters including bonus ratios and performance fees.
+
+```vyper
+struct YieldConfig:
+    maxYieldIncrease: uint256      # Max yield increase threshold
+    performanceFee: uint256        # Performance fee (basis points)
+    ambassadorBonusRatio: uint256  # Ambassador bonus multiplier
+    bonusRatio: uint256            # User bonus multiplier
+    bonusAsset: address            # Asset for bonus distribution
+```
+
+#### AgentConfig
+
+Agent creation settings.
+
+```vyper
+struct AgentConfig:
+    startingAgent: address              # Default agent for new wallets
+    startingAgentActivationLength: uint256  # Agent activation period
+```
+
+#### ManagerConfig
+
+Manager activation settings.
+
+```vyper
+struct ManagerConfig:
+    managerPeriod: uint256           # Manager period length
+    managerActivationLength: uint256 # Blocks until manager active
+    mustHaveUsdValueOnSwaps: bool    # Require USD value tracking
+    maxNumSwapsPerPeriod: uint256    # Swap limit per period
+    maxSlippageOnSwaps: uint256      # Max slippage (basis points)
+    onlyApprovedYieldOpps: bool      # Restrict to approved yield
+```
+
+#### PayeeConfig
+
+Payee activation settings.
+
+```vyper
+struct PayeeConfig:
+    payeePeriod: uint256           # Payee period length
+    payeeActivationLength: uint256 # Blocks until payee active
+```
+
+#### ChequeConfig
+
+Cheque limits and timing parameters.
+
+```vyper
+struct ChequeConfig:
+    maxNumActiveCheques: uint256    # Max concurrent active cheques
+    instantUsdThreshold: uint256    # USD threshold for instant cheques
+    periodLength: uint256           # Cheque period length
+    expensiveDelayBlocks: uint256   # Delay for expensive cheques
+    defaultExpiryBlocks: uint256    # Default cheque expiry
+```
+
+### Local Structs
+
+#### VaultToken
+
+Data retrieved from Ledger for vault tokens.
+
+```vyper
+struct VaultToken:
+    legoId: uint256           # ID of lego managing this token
+    underlyingAsset: address  # Base asset (if yield token)
+    decimals: uint256         # Token decimals
+    isRebasing: bool          # Whether token is rebasing
+```
+
+#### AssetUsdValueConfig
+
+Configuration for USD value calculations.
+
+```vyper
+struct AssetUsdValueConfig:
+    legoId: uint256           # Lego ID from Ledger
+    legoAddr: address         # Resolved lego address
+    isYieldAsset: bool        # True if has underlying
+    underlyingAsset: address  # Underlying asset address
+```
+
+#### ProfitCalcConfig
+
+Configuration for profit calculations.
+
+```vyper
+struct ProfitCalcConfig:
+    legoId: uint256           # Lego ID from Ledger
+    legoAddr: address         # Resolved lego address
+    isYieldAsset: bool        # True if has underlying
+    underlyingAsset: address  # Underlying asset address
+    maxYieldIncrease: uint256 # Max yield increase threshold
+    performanceFee: uint256   # Performance fee (basis points)
+    isRebasing: bool          # Whether token is rebasing
+    decimals: uint256         # Token decimals
+```
+
+#### LootDistroConfig
+
+Configuration for loot distribution.
+
+```vyper
+struct LootDistroConfig:
+    legoId: uint256                      # Lego ID from Ledger
+    legoAddr: address                    # Resolved lego address
+    underlyingAsset: address             # Underlying asset
+    ambassador: address                  # Ambassador address (always empty from MissionControl)
+    ambassadorRevShare: AmbassadorRevShare  # Revenue share config
+    ambassadorBonusRatio: uint256        # Ambassador bonus ratio
+    bonusRatio: uint256                  # User bonus ratio
+    bonusAsset: address                  # Bonus distribution asset
+```
+
+#### UserWalletCreationConfig
+
+Aggregated configuration for wallet creation.
+
+```vyper
+struct UserWalletCreationConfig:
+    numUserWalletsAllowed: uint256           # Max wallets allowed
+    isCreatorAllowed: bool                   # Creator permission
+    walletTemplate: address                  # Wallet template
+    configTemplate: address                  # Config template
+    startingAgent: address                   # Default agent
+    startingAgentActivationLength: uint256   # Agent activation
+    managerPeriod: uint256                   # Manager period
+    managerActivationLength: uint256         # Manager activation
+    mustHaveUsdValueOnSwaps: bool            # USD tracking required
+    maxNumSwapsPerPeriod: uint256            # Swap limit
+    maxSlippageOnSwaps: uint256              # Max slippage
+    onlyApprovedYieldOpps: bool              # Approved yield only
+    payeePeriod: uint256                     # Payee period
+    payeeActivationLength: uint256           # Payee activation
+    chequeMaxNumActiveCheques: uint256       # Max active cheques
+    chequeInstantUsdThreshold: uint256       # Instant threshold
+    chequePeriodLength: uint256              # Cheque period
+    chequeExpensiveDelayBlocks: uint256      # Expensive delay
+    chequeDefaultExpiryBlocks: uint256       # Default expiry
+    minKeyActionTimeLock: uint256            # Min timelock
+    maxKeyActionTimeLock: uint256            # Max timelock
+```
 
 ## State Variables
 
 ### Global Configurations
-- `userWalletConfig: cs.UserWalletConfig` - Protocol-wide wallet settings
-- `agentConfig: cs.AgentConfig` - Agent creation configuration
-- `managerConfig: cs.ManagerConfig` - Manager settings
-- `payeeConfig: cs.PayeeConfig` - Payee settings
-- `chequeConfig: cs.ChequeConfig` - Cheque settings
+```vyper
+userWalletConfig: public(UserWalletConfig)
+# Protocol-wide wallet settings
+
+agentConfig: public(AgentConfig)
+# Agent creation configuration
+
+managerConfig: public(ManagerConfig)
+# Manager settings
+
+payeeConfig: public(PayeeConfig)
+# Payee settings
+
+chequeConfig: public(ChequeConfig)
+# Cheque settings
+```
 
 ### Asset Configurations
-- `assetConfig: HashMap[address, cs.AssetConfig]` - Per-asset settings
-- `isStablecoin: HashMap[address, bool]` - Stablecoin flags for fee logic
+```vyper
+assetConfig: public(HashMap[address, AssetConfig])
+# Per-asset settings (checked via hasConfig flag)
+
+isStablecoin: public(HashMap[address, bool])
+# Stablecoin flags for fee logic
+```
 
 ### Security Settings
-- `creatorWhitelist: HashMap[address, bool]` - Allowed creators
-- `canPerformSecurityAction: HashMap[address, bool]` - Security signers
-- `isLockedSigner: HashMap[address, bool]` - Locked addresses
+```vyper
+creatorWhitelist: public(HashMap[address, bool])
+# creator -> is whitelisted
+
+canPerformSecurityAction: public(HashMap[address, bool])
+# signer -> can perform security action
+
+isLockedSigner: public(HashMap[address, bool])
+# signer -> is locked
+```
 
 ## Constructor
 
@@ -137,26 +335,13 @@ def __init__(_undyHq: address, _defaults: address):
 | Name | Type | Description |
 |------|------|-------------|
 | `_undyHq` | `address` | UndyHq registry contract address |
-| `_defaults` | `address` | Optional defaults contract for initial config |
+| `_defaults` | `address` | Optional Defaults contract for initial config |
 
-#### Access
+#### Behavior
 
-Called only during deployment
-
-#### Example Usage
-```python
-# Deploy with defaults
-mission_control = MissionControl.deploy(
-    undy_hq.address,
-    defaults_contract.address
-)
-
-# Deploy without defaults
-mission_control = MissionControl.deploy(
-    undy_hq.address,
-    ZERO_ADDRESS
-)
-```
+1. Initializes Addys module with UndyHq address
+2. Initializes DeptBasics with no minting capability
+3. If defaults contract provided, loads all config structs from it
 
 ## Global Configuration Functions
 
@@ -166,27 +351,12 @@ Updates global user wallet configuration.
 
 ```vyper
 @external
-def setUserWalletConfig(_config: cs.UserWalletConfig):
+def setUserWalletConfig(_config: UserWalletConfig):
 ```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_config` | `UserWalletConfig` | Complete wallet configuration struct |
 
 #### Access
 
-Only callable by switchboard addresses
-
-#### Example Usage
-```python
-# Update wallet configuration
-mission_control.setUserWalletConfig(
-    new_wallet_config,
-    sender=switchboard
-)
-```
+Only callable by switchboard addresses when not paused.
 
 ### `setManagerConfig`
 
@@ -194,18 +364,8 @@ Updates manager configuration.
 
 ```vyper
 @external
-def setManagerConfig(_config: cs.ManagerConfig):
+def setManagerConfig(_config: ManagerConfig):
 ```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_config` | `ManagerConfig` | Manager settings |
-
-#### Access
-
-Only callable by switchboard addresses
 
 ### `setPayeeConfig`
 
@@ -213,18 +373,8 @@ Updates payee configuration.
 
 ```vyper
 @external
-def setPayeeConfig(_config: cs.PayeeConfig):
+def setPayeeConfig(_config: PayeeConfig):
 ```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_config` | `PayeeConfig` | Payee settings |
-
-#### Access
-
-Only callable by switchboard addresses
 
 ### `setChequeConfig`
 
@@ -232,18 +382,8 @@ Updates cheque configuration.
 
 ```vyper
 @external
-def setChequeConfig(_config: cs.ChequeConfig):
+def setChequeConfig(_config: ChequeConfig):
 ```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_config` | `ChequeConfig` | Cheque settings |
-
-#### Access
-
-Only callable by switchboard addresses
 
 ### `getUserWalletCreationConfig`
 
@@ -267,333 +407,14 @@ def getUserWalletCreationConfig(_creator: address) -> UserWalletCreationConfig:
 |------|-------------|
 | `UserWalletCreationConfig` | Aggregated creation configuration |
 
-#### Access
-
-Public view function
-
-#### Example Usage
-```python
-# Check creation permissions and settings
-config = mission_control.getUserWalletCreationConfig(creator)
-if config.isCreatorAllowed:
-    # Can create wallet with config parameters
-    pass
-```
-
-## Agent Configuration Functions
-
-### `setAgentConfig`
-
-Updates agent configuration.
-
-```vyper
-@external
-def setAgentConfig(_config: cs.AgentConfig):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_config` | `AgentConfig` | Agent configuration struct |
-
-#### Access
-
-Only callable by switchboard addresses
-
-### `setStarterAgent`
-
-Updates the default starting agent.
-
-```vyper
-@external
-def setStarterAgent(_agent: address):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_agent` | `address` | Default agent address |
-
-#### Access
-
-Only callable by switchboard addresses
-
-### `getAgentCreationConfig`
-
-Gets aggregated configuration for agent creation.
-
-```vyper
-@view
-@external
-def getAgentCreationConfig(_creator: address) -> AgentCreationConfig:
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_creator` | `address` | Address attempting to create agent |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `AgentCreationConfig` | Aggregated agent creation config |
-
-#### Access
-
-Public view function
-
-## Asset Configuration Functions
-
-### `setAssetConfig`
-
-Sets configuration for a specific asset.
-
-```vyper
-@external
-def setAssetConfig(_asset: address, _config: cs.AssetConfig):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_asset` | `address` | Asset address to configure |
-| `_config` | `AssetConfig` | Asset configuration struct |
-
-#### Access
-
-Only callable by switchboard addresses
-
-#### Example Usage
-```python
-# Configure yield vault
-vault_config = AssetConfig(
-    legoId=5,
-    decimals=18,
-    staleBlocks=50,
-    txFees=TxFees(...),
-    ambassadorRevShare=AmbassadorRevShare(...),
-    yieldConfig=YieldConfig(
-        isYieldAsset=True,
-        isRebasing=False,
-        underlyingAsset=usdc.address,
-        maxYieldIncrease=50_00,  # 50%
-        performanceFee=10_00,    # 10%
-        ...
-    )
-)
-mission_control.setAssetConfig(vault.address, vault_config)
-```
-
-### `setIsStablecoin`
-
-Marks an asset as a stablecoin.
-
-```vyper
-@external
-def setIsStablecoin(_asset: address, _isStablecoin: bool):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_asset` | `address` | Asset address |
-| `_isStablecoin` | `bool` | Whether asset is stablecoin |
-
-#### Access
-
-Only callable by switchboard addresses
-
-### `getProfitCalcConfig`
-
-Gets profit calculation configuration for an asset.
-
-```vyper
-@view
-@external
-def getProfitCalcConfig(_asset: address) -> ProfitCalcConfig:
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_asset` | `address` | Asset to get config for |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `ProfitCalcConfig` | Profit calculation parameters |
-
-#### Access
-
-Public view function
-
-### `getAssetUsdValueConfig`
-
-Gets USD value calculation configuration.
-
-```vyper
-@view
-@external
-def getAssetUsdValueConfig(_asset: address) -> AssetUsdValueConfig:
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_asset` | `address` | Asset to get config for |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `AssetUsdValueConfig` | USD value calculation parameters |
-
-#### Access
-
-Public view function
-
-## Fee Functions
-
-### `getSwapFee`
-
-Gets swap fee for a token pair.
-
-```vyper
-@view
-@external
-def getSwapFee(_tokenIn: address, _tokenOut: address) -> uint256:
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_tokenIn` | `address` | Input token |
-| `_tokenOut` | `address` | Output token |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `uint256` | Swap fee in basis points |
-
-#### Access
-
-Public view function
-
-#### Fee Logic
-1. If both tokens are stablecoins: use `stableSwapFee`
-2. If output token has asset config: use asset-specific swap fee
-3. Otherwise: use global default swap fee
-
-### `getRewardsFee`
-
-Gets rewards claiming fee for an asset.
-
-```vyper
-@view
-@external
-def getRewardsFee(_asset: address) -> uint256:
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_asset` | `address` | Reward asset |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `uint256` | Rewards fee in basis points |
-
-#### Access
-
-Public view function
-
-## Security Functions
-
-### `setCanPerformSecurityAction`
-
-Grants or revokes security action permissions.
-
-```vyper
-@external
-def setCanPerformSecurityAction(_signer: address, _canPerform: bool):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_signer` | `address` | Address to configure |
-| `_canPerform` | `bool` | Whether can perform security actions |
-
-#### Access
-
-Only callable by switchboard addresses
-
-### `setCreatorWhitelist`
-
-Adds or removes addresses from creator whitelist.
-
-```vyper
-@external
-def setCreatorWhitelist(_creator: address, _isWhitelisted: bool):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_creator` | `address` | Creator address |
-| `_isWhitelisted` | `bool` | Whether whitelisted |
-
-#### Access
-
-Only callable by switchboard addresses
-
-### `setLockedSigner`
-
-Locks or unlocks a signer address.
-
-```vyper
-@external
-def setLockedSigner(_signer: address, _isLocked: bool):
-```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_signer` | `address` | Signer address |
-| `_isLocked` | `bool` | Whether locked |
-
-#### Access
-
-Only callable by switchboard addresses
-
-## Additional View Functions
-
-### `getLootDistroConfig`
-
-Gets loot distribution configuration for an asset.
-
-```vyper
-@view
-@external
-def getLootDistroConfig(_asset: address) -> LootDistroConfig:
-```
+#### Behavior
+
+Combines settings from:
+- UserWalletConfig (templates, limits, timelocks)
+- ManagerConfig (periods, slippage, swap limits)
+- PayeeConfig (periods)
+- AgentConfig (starting agent)
+- ChequeConfig (limits, thresholds)
 
 ### `getDepositRewardsAsset`
 
@@ -615,20 +436,184 @@ Gets the loot claim cooldown period.
 def getLootClaimCoolOffPeriod() -> uint256:
 ```
 
-## Configuration Patterns
+## Agent Configuration Functions
 
-### Asset Configuration with Defaults
-```python
-# Check asset-specific config
-config = mission_control.getAssetUsdValueConfig(asset)
+### `setAgentConfig`
 
-if config.decimals == 0:
-    # No asset-specific config, using defaults
-    print("Using global defaults")
-else:
-    # Asset has custom configuration
-    print(f"Using custom config with {config.decimals} decimals")
+Updates agent configuration.
+
+```vyper
+@external
+def setAgentConfig(_config: AgentConfig):
 ```
+
+### `setStarterAgent`
+
+Updates the default starting agent only (without full config update).
+
+```vyper
+@external
+def setStarterAgent(_agent: address):
+```
+
+## Asset Configuration Functions
+
+### `setAssetConfig`
+
+Sets configuration for a specific asset.
+
+```vyper
+@external
+def setAssetConfig(_asset: address, _config: AssetConfig):
+```
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------|-------------|
+| `_asset` | `address` | Asset address to configure |
+| `_config` | `AssetConfig` | Asset configuration struct |
+
+### `setIsStablecoin`
+
+Marks an asset as a stablecoin.
+
+```vyper
+@external
+def setIsStablecoin(_asset: address, _isStablecoin: bool):
+```
+
+## Fee Functions
+
+### `getSwapFee`
+
+Gets swap fee for a token pair.
+
+```vyper
+@view
+@external
+def getSwapFee(_tokenIn: address, _tokenOut: address) -> uint256:
+```
+
+#### Fee Logic
+
+1. If both tokens are stablecoins: use `stableSwapFee` from userWalletConfig
+2. If output token has asset config (hasConfig == true): use asset-specific `swapFee`
+3. Otherwise: use global default `swapFee` from userWalletConfig
+
+### `getRewardsFee`
+
+Gets rewards claiming fee for an asset.
+
+```vyper
+@view
+@external
+def getRewardsFee(_asset: address) -> uint256:
+```
+
+#### Fee Logic
+
+1. If asset has config (hasConfig == true): use asset-specific `rewardsFee`
+2. Otherwise: use global default `rewardsFee` from userWalletConfig
+
+## Helper Functions
+
+### `getProfitCalcConfig`
+
+Gets profit calculation configuration for an asset.
+
+```vyper
+@view
+@external
+def getProfitCalcConfig(_asset: address) -> ProfitCalcConfig:
+```
+
+#### Behavior
+
+1. Checks asset-specific config first (if hasConfig == true)
+2. Falls back to global userWalletConfig for maxYieldIncrease and performanceFee
+3. Retrieves VaultToken data from Ledger
+4. Resolves legoAddr from LegoBook using legoId
+
+### `getAssetUsdValueConfig`
+
+Gets USD value calculation configuration.
+
+```vyper
+@view
+@external
+def getAssetUsdValueConfig(_asset: address) -> AssetUsdValueConfig:
+```
+
+#### Behavior
+
+1. Retrieves VaultToken data from Ledger
+2. Resolves legoAddr from LegoBook using legoId
+3. Determines if yield asset based on underlyingAsset presence
+
+### `getLootDistroConfig`
+
+Gets loot distribution configuration for an asset.
+
+```vyper
+@view
+@external
+def getLootDistroConfig(_asset: address) -> LootDistroConfig:
+```
+
+#### Behavior
+
+1. Checks asset-specific config first (if hasConfig == true)
+2. Falls back to global userWalletConfig for ambassador shares and bonus settings
+3. Retrieves VaultToken data from Ledger
+4. Resolves legoAddr from LegoBook
+
+## Security Functions
+
+### `setCanPerformSecurityAction`
+
+Grants or revokes security action permissions.
+
+```vyper
+@external
+def setCanPerformSecurityAction(_signer: address, _canPerform: bool):
+```
+
+### `setCreatorWhitelist`
+
+Adds or removes addresses from creator whitelist.
+
+```vyper
+@external
+def setCreatorWhitelist(_creator: address, _isWhitelisted: bool):
+```
+
+### `setLockedSigner`
+
+Locks or unlocks a signer address.
+
+```vyper
+@external
+def setLockedSigner(_signer: address, _isLocked: bool):
+```
+
+## Internal Functions
+
+### `_isCreatorAllowed`
+
+Checks if creator is allowed based on whitelist settings.
+
+```vyper
+@view
+@internal
+def _isCreatorAllowed(_shouldEnforceWhitelist: bool, _creator: address) -> bool:
+```
+
+Returns True if:
+- Whitelist is not enforced, OR
+- Creator is in whitelist
+
+## Configuration Patterns
 
 ### Fee Calculation Pattern
 ```python
@@ -636,7 +621,7 @@ else:
 fee = mission_control.getSwapFee(token_in, token_out)
 
 # Apply fee to swap amount
-fee_amount = swap_amount * fee / 10000
+fee_amount = swap_amount * fee // 10000
 net_amount = swap_amount - fee_amount
 ```
 
@@ -658,9 +643,8 @@ if mission_control.isLockedSigner(signer):
 config = mission_control.getUserWalletCreationConfig(creator)
 
 if config.isCreatorAllowed:
-    # Check other limits
-    if config.numUserWalletsAllowed > 0:
-        # Global limit enforced
+    if config.numUserWalletsAllowed == 0 or existing_wallets < config.numUserWalletsAllowed:
+        # Can create wallet
         pass
 else:
     raise Exception("Creator not whitelisted")
@@ -669,20 +653,16 @@ else:
 ## Security Considerations
 
 ### Access Control
-- All configuration updates restricted to switchboard
+- All configuration updates restricted to switchboard addresses
 - No direct user access to modify settings
-- Department-based permission system
+- Pause protection on all setters
 
 ### Configuration Safety
 - Structured data prevents partial updates
+- `hasConfig` flag ensures explicit asset configuration
 - Validation in consuming contracts
-- Pause protection on all setters
 
-### Defaults and Fallbacks
-- Global defaults for unset values
-- Zero checks for missing configs
-- Graceful degradation patterns
-
-## Testing
-
-For comprehensive test examples, see: [`tests/core/data/test_mission_control.py`](../../../tests/core/data/test_mission_control.py)
+### Ledger Dependency
+- VaultToken data comes from Ledger
+- LegoAddr resolution through LegoBook
+- Missing data handled gracefully (returns empty address)

@@ -1,6 +1,8 @@
 # Paymaster Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/Paymaster.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/walletBackpack/Paymaster.vy)
+
+> **Note**: The file path in the repository is `contracts/core/walletBackpack/Paymaster.vy`
 
 ## Overview
 
@@ -753,41 +755,142 @@ Creates conservative defaults with:
 
 ## Internal Validation Logic
 
-### Payee Limits Validation
+### Payee Limits Validation (`_validatePayeeLimits`)
 
-The contract enforces logical consistency:
+The contract enforces logical consistency in limit values:
 
-1. **Value Hierarchy**:
-   - Per-transaction ≤ Per-period ≤ Lifetime
-   - Zero values treated as "unlimited"
-   - Applies to both unit and USD limits
+```vyper
+@pure
+@internal
+def _validatePayeeLimits(_limits: wcs.PayeeLimits) -> bool:
+    # NOTE: 0 values are treated as "unlimited"
 
-2. **Pull Payment Requirements**:
-   - Must have at least one limit type (unit or USD)
-   - Global setting must allow pull payments
-   - Prevents unlimited pull access
+    # validate per-tx cap does not exceed per-period cap (when both are set)
+    if _limits.perTxCap != 0 and _limits.perPeriodCap != 0:
+        if _limits.perTxCap > _limits.perPeriodCap:
+            return False
+
+    # validate per-period cap does not exceed lifetime cap (when both are set)
+    if _limits.perPeriodCap != 0 and _limits.lifetimeCap != 0:
+        if _limits.perPeriodCap > _limits.lifetimeCap:
+            return False
+
+    # validate per-tx cap does not exceed lifetime cap (when both are set)
+    if _limits.perTxCap != 0 and _limits.lifetimeCap != 0:
+        if _limits.perTxCap > _limits.lifetimeCap:
+            return False
+
+    return True
+```
+
+**Rules**:
+1. **Value Hierarchy**: Per-transaction ≤ Per-period ≤ Lifetime
+2. **Zero Values**: Treated as "unlimited" (no cap enforced)
+3. **Partial Limits**: Only non-zero pairs are compared
+4. **Applies to both**: Unit limits (token amounts) and USD limits
+
+### USD Limit Safety (`_validateFailOnZeroPriceWithUsdLimits`)
+
+**Critical Security Validation**: When USD limits are configured, the `failOnZeroPrice` flag MUST be set to `True`.
+
+```vyper
+@pure
+@internal
+def _validateFailOnZeroPriceWithUsdLimits(
+    _failOnZeroPrice: bool,
+    _usdLimits: wcs.PayeeLimits
+) -> bool:
+    # if any USD limits are set (non-zero = limit is active)
+    hasUsdLimits: bool = (
+        _usdLimits.perTxCap != 0 or
+        _usdLimits.perPeriodCap != 0 or
+        _usdLimits.lifetimeCap != 0
+    )
+
+    # If USD limits are set, failOnZeroPrice must be True
+    # to prevent bypassing limits when price data is unavailable
+    if hasUsdLimits and not _failOnZeroPrice:
+        return False
+
+    return True
+```
+
+**Purpose**: Prevents a payee from bypassing USD-based limits when price data is unavailable. Without this check, a malicious or compromised price feed could return zero, effectively removing all USD-denominated caps.
+
+**Example Scenario**:
+- Payee has $1,000 per-transaction USD limit
+- Price oracle fails, returns 0 for asset price
+- Without `failOnZeroPrice=True`, transaction proceeds with no USD limit enforcement
+- With `failOnZeroPrice=True`, transaction fails safely
+
+### Pull Payment Validation (`_validatePullPayee`)
+
+Pull payees (payees who can initiate transfers from the wallet) require additional safeguards:
+
+```vyper
+@pure
+@internal
+def _validatePullPayee(
+    _canPull: bool,
+    _globalCanPull: bool,
+    _unitLimits: wcs.PayeeLimits,
+    _usdLimits: wcs.PayeeLimits,
+) -> bool:
+    if not _canPull:
+        return True # not a pull payee, no additional validation needed
+
+    # if global canPull is false, payee cannot pull
+    if not _globalCanPull:
+        return False
+
+    # pull payees must have at least one type of limit
+    hasUnitLimits: bool = (
+        _unitLimits.perTxCap != 0 or
+        _unitLimits.perPeriodCap != 0 or
+        _unitLimits.lifetimeCap != 0
+    )
+    hasUsdLimits: bool = (
+        _usdLimits.perTxCap != 0 or
+        _usdLimits.perPeriodCap != 0 or
+        _usdLimits.lifetimeCap != 0
+    )
+    return hasUnitLimits or hasUsdLimits
+```
+
+**Requirements**:
+1. **Global Permission**: `globalCanPull` must be enabled
+2. **Limit Requirement**: Must have at least one limit type configured (unit OR USD)
+3. **Prevents Unlimited Pull**: Ensures no payee can drain wallet without restrictions
 
 ### Period and Timing Validation
 
-1. **Period Length**:
-   - Must be within MIN/MAX_PAYEE_PERIOD
+1. **Period Length** (`_validatePayeePeriod`):
+   - Must be within MIN/MAX_PAYEE_PERIOD bounds
    - Cooldown cannot exceed period length
 
-2. **Activation Timing**:
+2. **Activation Timing** (`_validateStartDelay`, `_validateActivationLength`):
    - Start delay ≥ wallet time-lock
    - Start delay ≤ MAX_START_DELAY
-   - Activation length within bounds
+   - Activation length within MIN/MAX bounds
 
-### Asset Controls Validation
+3. **Cooldown** (`_validatePayeeCooldown`):
+   - Zero means no cooldown (valid)
+   - If set, must be ≤ period length
+
+### Asset Controls Validation (`_validatePrimaryAsset`)
 
 1. **Primary Asset Logic**:
-   - If `onlyPrimaryAsset` = true, must specify asset
-   - Empty address allowed if not restricted
+   - If `onlyPrimaryAsset` = true, `primaryAsset` must be set (non-empty address)
+   - Empty address allowed if not restricted to primary asset only
 
-2. **Exclusion Rules**:
-   - Cannot add wallet owner as payee
-   - Cannot add wallet or config contracts
-   - Cannot add already whitelisted addresses
+### Payee Exclusion Rules
+
+Built into `_isValidNewPayee`:
+- Cannot add wallet owner as payee
+- Cannot add wallet address itself
+- Cannot add wallet config contract
+- Cannot add already whitelisted addresses
+- Cannot add addresses with active cheques
 
 ## Security Considerations
 

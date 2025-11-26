@@ -1,6 +1,6 @@
 # HighCommand Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/HighCommand.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/walletBackpack/HighCommand.vy)
 
 ## Overview
 
@@ -70,15 +70,17 @@ The contract implements sophisticated validation logic ensuring managers cannot 
 |  |   • txCooldownBlocks        • canClaimRewards                     | |
 |  |   • failOnZeroPrice         • allowedLegos[]                      | |
 |  |                                                                   | |
-|  |  WhitelistPerms:           TransferPerms:                        | |
-|  |   • canAddPending           • canTransfer                         | |
-|  |   • canConfirm              • canCreateCheque                     | |
-|  |   • canCancel               • canAddPendingPayee                  | |
-|  |   • canRemove               • allowedPayees[]                     | |
+|  |  SwapPerms:                WhitelistPerms:                       | |
+|  |   • mustHaveUsdValue        • canAddPending                       | |
+|  |   • maxNumSwapsPerPeriod    • canConfirm                          | |
+|  |   • maxSlippage             • canCancel                           | |
+|  |                              • canRemove                           | |
 |  |                                                                   | |
-|  |  Other:                                                           | |
-|  |   • allowedAssets[]                                               | |
-|  |   • canClaimLoot                                                  | |
+|  |  TransferPerms:            Other:                                 | |
+|  |   • canTransfer             • allowedAssets[]                     | |
+|  |   • canCreateCheque         • canClaimLoot                        | |
+|  |   • canAddPendingPayee      • onlyApprovedYieldOpps               | |
+|  |   • allowedPayees[]                                               | |
 |  +-------------------------------------------------------------------+ |
 +-------------------------------------------------------------------------+
 ```
@@ -159,6 +161,7 @@ def addManager(
     _manager: address,
     _limits: wcs.ManagerLimits,
     _legoPerms: wcs.LegoPerms,
+    _swapPerms: wcs.SwapPerms,
     _whitelistPerms: wcs.WhitelistPerms,
     _transferPerms: wcs.TransferPerms,
     _allowedAssets: DynArray[address, MAX_CONFIG_ASSETS],
@@ -176,6 +179,7 @@ def addManager(
 | `_manager` | `address` | Manager address to add |
 | `_limits` | `ManagerLimits` | Transaction and value limits |
 | `_legoPerms` | `LegoPerms` | DeFi protocol permissions |
+| `_swapPerms` | `SwapPerms` | Swap-specific permissions and limits |
 | `_whitelistPerms` | `WhitelistPerms` | Whitelist management permissions |
 | `_transferPerms` | `TransferPerms` | Transfer and payee permissions |
 | `_allowedAssets` | `DynArray[address, MAX_CONFIG_ASSETS]` | Allowed asset addresses |
@@ -245,6 +249,7 @@ def updateManager(
     _manager: address,
     _limits: wcs.ManagerLimits,
     _legoPerms: wcs.LegoPerms,
+    _swapPerms: wcs.SwapPerms,
     _whitelistPerms: wcs.WhitelistPerms,
     _transferPerms: wcs.TransferPerms,
     _allowedAssets: DynArray[address, MAX_CONFIG_ASSETS],
@@ -260,6 +265,7 @@ def updateManager(
 | `_manager` | `address` | Manager to update |
 | `_limits` | `ManagerLimits` | New transaction limits |
 | `_legoPerms` | `LegoPerms` | New DeFi permissions |
+| `_swapPerms` | `SwapPerms` | New swap permissions |
 | `_whitelistPerms` | `WhitelistPerms` | New whitelist permissions |
 | `_transferPerms` | `TransferPerms` | New transfer permissions |
 | `_allowedAssets` | `DynArray[address, MAX_CONFIG_ASSETS]` | New allowed assets |
@@ -392,6 +398,7 @@ def setGlobalManagerSettings(
     _canOwnerManage: bool,
     _limits: wcs.ManagerLimits,
     _legoPerms: wcs.LegoPerms,
+    _swapPerms: wcs.SwapPerms,
     _whitelistPerms: wcs.WhitelistPerms,
     _transferPerms: wcs.TransferPerms,
     _allowedAssets: DynArray[address, MAX_CONFIG_ASSETS],
@@ -409,6 +416,7 @@ def setGlobalManagerSettings(
 | `_canOwnerManage` | `bool` | Can owner act as manager |
 | `_limits` | `ManagerLimits` | Default transaction limits |
 | `_legoPerms` | `LegoPerms` | Default DeFi permissions |
+| `_swapPerms` | `SwapPerms` | Default swap permissions |
 | `_whitelistPerms` | `WhitelistPerms` | Default whitelist permissions |
 | `_transferPerms` | `TransferPerms` | Default transfer permissions |
 | `_allowedAssets` | `DynArray[address, MAX_CONFIG_ASSETS]` | Default allowed assets |
@@ -562,6 +570,10 @@ def createDefaultGlobalManagerSettings(
     _managerPeriod: uint256,
     _minTimeLock: uint256,
     _defaultActivationLength: uint256,
+    _mustHaveUsdValueOnSwaps: bool,
+    _maxNumSwapsPerPeriod: uint256,
+    _maxSlippageOnSwaps: uint256,
+    _onlyApprovedYieldOpps: bool,
 ) -> wcs.GlobalManagerSettings:
 ```
 
@@ -572,6 +584,10 @@ def createDefaultGlobalManagerSettings(
 | `_managerPeriod` | `uint256` | Period length for limits |
 | `_minTimeLock` | `uint256` | Minimum time-lock to use |
 | `_defaultActivationLength` | `uint256` | Default activation period |
+| `_mustHaveUsdValueOnSwaps` | `bool` | Require USD value tracking on swaps |
+| `_maxNumSwapsPerPeriod` | `uint256` | Max swaps per period (0 = unlimited) |
+| `_maxSlippageOnSwaps` | `uint256` | Max slippage in basis points |
+| `_onlyApprovedYieldOpps` | `bool` | Restrict to approved yield opportunities |
 
 #### Returns
 
@@ -668,7 +684,7 @@ Public view function
 
 The contract enforces logical consistency in limits:
 
-1. **Value Hierarchy**: 
+1. **Value Hierarchy**:
    - Per-transaction ≤ Per-period ≤ Lifetime
    - Zero values treated as "unlimited"
 
@@ -679,14 +695,27 @@ The contract enforces logical consistency in limits:
 3. **Period Bounds**:
    - Must be within MIN/MAX_MANAGER_PERIOD
 
+4. **USD Limit Safety**:
+   - If any USD limits are set, `failOnZeroPrice` must be True
+   - Prevents bypassing limits when price data is unavailable
+
 ### Lego Permissions Validation
 
 1. **Permission Consistency**:
-   - If allowedLegos specified, must have at least one permission
+   - If allowedLegos specified, must have at least one lego permission
    - Each lego ID must be valid in LegoBook registry
 
 2. **Duplicate Prevention**:
    - No duplicate lego IDs allowed
+
+### Swap Permissions Validation
+
+1. **Slippage Bounds**:
+   - `maxSlippage` cannot exceed 100% (10000 basis points)
+
+2. **USD Value Dependency**:
+   - If `maxSlippage` is set, `mustHaveUsdValue` must be True
+   - Cannot validate slippage without USD values
 
 ### Transfer Permissions Validation
 

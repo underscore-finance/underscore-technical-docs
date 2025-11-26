@@ -1,6 +1,6 @@
 # UserWallet Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/userWallet/UserWallet.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/userWallet/UserWallet.vy)
 
 ## Overview
 
@@ -55,7 +55,7 @@ The wallet implements sophisticated yield profit tracking for rebasing and non-r
 |  |    - borrow / repayDebt                                           | |
 |  |                                                                   | |
 |  |  Rewards:                                                         | |
-|  |    - claimRewards (with automatic fee handling)                   | |
+|  |    - claimIncentives (with automatic fee handling)                | |
 |  +-------------------------------------------------------------------+ |
 |                                                                         |
 |  +-------------------------------------------------------------------+ |
@@ -896,17 +896,17 @@ External function requiring REPAY_DEBT permission
 
 ## Rewards Functions
 
-### `claimRewards`
+### `claimIncentives`
 
-Claims rewards from protocols with automatic fee handling.
+Claims rewards/incentives from protocols with automatic fee handling.
 
 ```vyper
 @external
-def claimRewards(
+def claimIncentives(
     _legoId: uint256,
     _rewardToken: address = empty(address),
     _rewardAmount: uint256 = max_value(uint256),
-    _extraData: bytes32 = empty(bytes32),
+    _proofs: DynArray[bytes32, MAX_PROOFS] = [],
 ) -> (uint256, uint256):
 ```
 
@@ -917,7 +917,7 @@ def claimRewards(
 | `_legoId` | `uint256` | Lego partner ID |
 | `_rewardToken` | `address` | Expected reward token |
 | `_rewardAmount` | `uint256` | Expected amount |
-| `_extraData` | `bytes32` | Protocol-specific data |
+| `_proofs` | `DynArray[bytes32, 25]` | Merkle proofs for incentive claims |
 
 #### Returns
 

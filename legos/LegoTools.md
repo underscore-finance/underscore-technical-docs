@@ -1,6 +1,6 @@
 # LegoTools Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/LegoTools.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/legos/LegoTools.vy)
 
 ## Overview
 

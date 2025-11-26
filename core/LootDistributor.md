@@ -1,6 +1,6 @@
 # LootDistributor Technical Documentation
 
-[📄 View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/LootDistributor.vy)
+[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/LootDistributor.vy)
 
 ## Overview
 
@@ -8,12 +8,11 @@ LootDistributor is the comprehensive rewards and revenue share engine for the Un
 
 **Core Features**:
 - **Ambassador Revenue Share**: Automatic distribution of swap, yield, and rewards fees to ambassadors
-- **Yield Bonus System**: Performance-based bonuses paid in-kind or alternative assets
+- **Yield Bonus System**: RIPE token bonuses based on yield performance
 - **Deposit Rewards**: Points-based rewards system for protocol deposits
+- **RIPE Staking Integration**: Automatic staking of RIPE rewards via RipeTeller
+- **Revenue to Governance**: Leftover fees transferred to protocol governance
 - **Claimable Loot Management**: Secure tracking and distribution of accumulated rewards
-- **Fee Routing**: Intelligent fee collection from various protocol activities
-
-The contract implements sophisticated distribution logic including period-based tracking with automatic resets, multi-asset reward accumulation, cooldown periods for claim security, and flexible bonus configurations per asset type.
 
 ## System Architecture Diagram
 
@@ -27,40 +26,25 @@ The contract implements sophisticated distribution logic including period-based 
 |  |                                                                   | |
 |  |  1. Fee Collection:                                               | |
 |  |     ├─> Swap fees from trading activities                         | |
-|  |     ├─> Yield fees from profit realization                       | |
+|  |     ├─> Yield performance fees from profit realization            | |
 |  |     └─> Rewards fees from external claims                        | |
 |  |                                                                   | |
 |  |  2. Ambassador Revenue Share:                                     | |
 |  |     ├─> Calculate ambassador's share based on action type        | |
 |  |     ├─> Add to claimable loot for ambassador                     | |
-|  |     └─> Track by asset for multi-asset support                   | |
+|  |     └─> Leftover transferred to governance                       | |
 |  |                                                                   | |
 |  |  3. Yield Bonus Distribution:                                     | |
 |  |     ├─> Check eligibility via YieldLego                           | |
-|  |     ├─> Calculate bonus amount (in-kind or alt asset)            | |
+|  |     ├─> Convert yield to USD value                                | |
+|  |     ├─> Convert USD to RIPE token amount                          | |
 |  |     ├─> Distribute to user and ambassador                        | |
 |  |     └─> Respect available balance limits                         | |
 |  |                                                                   | |
-|  |  4. Deposit Rewards:                                              | |
-|  |     ├─> Track deposit points based on USD value × time           | |
-|  |     ├─> Pro-rata distribution when claimed                        | |
-|  |     └─> Global tracking for fair distribution                     | |
-|  +-------------------------------------------------------------------+ |
-|                                                                         |
-|  +-------------------------------------------------------------------+ |
-|  |                    Claimable Asset Management                      | |
-|  |                                                                   | |
-|  |  Registration System:                                              | |
-|  |    • Dynamic array of claimable assets per user                   | |
-|  |    • Index mapping for O(1) lookups                               | |
-|  |    • Automatic deregistration when balance = 0                    | |
-|  |                                                                   | |
-|  |  Claim Process:                                                   | |
-|  |    1. Check cooldown period (if not switchboard)                  | |
-|  |    2. Iterate through all claimable assets                        | |
-|  |    3. Transfer available balances                                 | |
-|  |    4. Update tracking and deregister if empty                     | |
-|  |    5. Update last claim timestamp                                 | |
+|  |  4. RIPE Rewards:                                                 | |
+|  |     ├─> Optional auto-staking via RipeTeller                     | |
+|  |     ├─> Configurable stake ratio                                  | |
+|  |     └─> Remaining amount sent directly to user                   | |
 |  +-------------------------------------------------------------------+ |
 |                                                                         |
 |  +-------------------------------------------------------------------+ |
@@ -68,12 +52,11 @@ The contract implements sophisticated distribution logic including period-based 
 |  |                                                                   | |
 |  |  Deposit Points = USD Value × Blocks Held / 10^18                 | |
 |  |                                                                   | |
-|  |  User Rewards = Total Rewards × User Points / Global Points       | |
+|  |  User Rewards = Available Rewards × User Points / Global Points   | |
 |  |                                                                   | |
-|  |  Updates trigger on:                                               | |
-|  |    • Deposit/withdrawal (value change)                             | |
-|  |    • Rewards claim (points reset)                                  | |
-|  |    • Manual update calls                                           | |
+|  |  Points stored in Ledger:                                         | |
+|  |    • Per-user: usdValue, depositPoints, lastUpdate                | |
+|  |    • Global: usdValue, depositPoints, lastUpdate                  | |
 |  +-------------------------------------------------------------------+ |
 +-------------------------------------------------------------------------+
 ```
@@ -82,23 +65,109 @@ The contract implements sophisticated distribution logic including period-based 
 
 LootDistributor implements the Department interface and integrates:
 - `Addys` module for address registry management
-- `DeptBasics` module for pause functionality and basic department features
+- `DeptBasics` module for pause functionality
+
+## Data Structures
+
+### PointsData
+
+```vyper
+struct PointsData:
+    usdValue: uint256       # Current USD value of deposits
+    depositPoints: uint256  # Accumulated deposit points
+    lastUpdate: uint256     # Block number of last update
+```
+
+### LootDistroConfig
+
+```vyper
+struct LootDistroConfig:
+    legoId: uint256                      # Lego ID managing the asset
+    legoAddr: address                    # Resolved lego address
+    underlyingAsset: address             # Underlying asset (for yield tokens)
+    ambassador: address                  # Ambassador address
+    ambassadorRevShare: AmbassadorRevShare  # Revenue share config
+    ambassadorBonusRatio: uint256        # Ambassador bonus ratio
+    bonusRatio: uint256                  # User bonus ratio
+    bonusAsset: address                  # RIPE token address
+```
+
+### DepositRewards
+
+```vyper
+struct DepositRewards:
+    asset: address   # Reward asset (typically RIPE)
+    amount: uint256  # Total rewards available
+```
+
+## State Variables
+
+### Claimable Loot Tracking
+```vyper
+lastClaim: public(HashMap[address, uint256])
+# user -> last claim block
+
+totalClaimableLoot: public(HashMap[address, uint256])
+# asset -> total claimable amount
+
+claimableLoot: public(HashMap[address, HashMap[address, uint256]])
+# user -> asset -> claimable amount
+
+claimableAssets: public(HashMap[address, HashMap[uint256, address]])
+# user -> index -> asset address
+
+indexOfClaimableAsset: public(HashMap[address, HashMap[address, uint256]])
+# user -> asset -> index
+
+numClaimableAssets: public(HashMap[address, uint256])
+# user -> number of claimable assets
+```
+
+### Deposit Rewards
+```vyper
+depositRewards: public(DepositRewards)
+# Current deposit rewards pool
+
+ripeStakeRatio: public(uint256)
+# Percentage of RIPE rewards to stake (basis points)
+
+ripeLockDuration: public(uint256)
+# Lock duration for staked RIPE
+```
+
+### Immutables
+```vyper
+RIPE_TOKEN: public(immutable(address))
+# RIPE governance token address
+
+RIPE_REGISTRY: public(immutable(address))
+# Ripe Protocol registry address
+```
 
 ## Constants
 
-- `HUNDRED_PERCENT: uint256 = 100_00` - 100% in basis points (100.00%)
-- `EIGHTEEN_DECIMALS: uint256 = 10 ** 18` - Scaling factor for points
-- `MAX_DEREGISTER_ASSETS: uint256 = 20` - Maximum assets to deregister per claim
+```vyper
+HUNDRED_PERCENT: constant(uint256) = 100_00  # 100.00%
+EIGHTEEN_DECIMALS: constant(uint256) = 10 ** 18
+MAX_DEREGISTER_ASSETS: constant(uint256) = 20
+RIPE_TELLER_ID: constant(uint256) = 17
+```
 
 ## Constructor
 
 ### `__init__`
 
-Initializes LootDistributor with registry integration.
+Initializes LootDistributor with RIPE integration.
 
 ```vyper
 @deploy
-def __init__(_undyHq: address):
+def __init__(
+    _undyHq: address,
+    _ripeToken: address,
+    _ripeRegistry: address,
+    _ripeStakeRatio: uint256,
+    _ripeLockDuration: uint256,
+):
 ```
 
 #### Parameters
@@ -106,17 +175,10 @@ def __init__(_undyHq: address):
 | Name | Type | Description |
 |------|------|-------------|
 | `_undyHq` | `address` | UndyHq registry contract address |
-
-#### Access
-
-Called only during deployment
-
-#### Example Usage
-```python
-loot_distributor = LootDistributor.deploy(
-    undy_hq.address
-)
-```
+| `_ripeToken` | `address` | RIPE governance token address |
+| `_ripeRegistry` | `address` | Ripe Protocol registry address |
+| `_ripeStakeRatio` | `uint256` | Initial stake ratio (basis points) |
+| `_ripeLockDuration` | `uint256` | Initial lock duration |
 
 ## Revenue Flow Functions
 
@@ -129,7 +191,7 @@ Collects fees from swap or rewards actions and distributes to ambassador.
 def addLootFromSwapOrRewards(
     _asset: address,
     _feeAmount: uint256,
-    _action: ws.ActionType,
+    _action: ActionType,
     _missionControl: address = empty(address),
 ):
 ```
@@ -143,38 +205,18 @@ def addLootFromSwapOrRewards(
 | `_action` | `ActionType` | Type of action (SWAP or REWARDS) |
 | `_missionControl` | `address` | Optional MissionControl address |
 
-#### Access
+#### Behavior
 
-Can only be called by user wallets
+1. Validates caller is a user wallet
+2. Transfers fee from caller to this contract
+3. If ambassador exists, calculates and distributes ambassador share
+4. Transfers leftover fee to governance
 
 #### Events Emitted
 
-- `TxFeePaid` - Contains asset (indexed), totalFee, ambassadorFeeRatio, ambassadorFee, ambassador (indexed), and action
-
-#### Example Usage
-```python
-# From UserWallet during swap
-loot_distributor.addLootFromSwapOrRewards(
-    usdc.address,
-    swap_fee_amount,
-    ActionType.SWAP,
-    mission_control.address
-)
-
-# From UserWallet during rewards claim
-loot_distributor.addLootFromSwapOrRewards(
-    reward_asset.address,
-    rewards_fee,
-    ActionType.REWARDS
-)
-```
-
-#### Notes
-
-- Fails gracefully if paused
-- Transfers fee from caller (must be approved)
-- Ambassador revenue share calculated based on action type
-- No distribution if user has no ambassador
+- `TransactionFeePaid` - Records fee payment from user
+- `AmbassadorTxFeePaid` - Records ambassador's share
+- `RevenueTransferredToGov` - Records transfer to governance
 
 ### `addLootFromYieldProfit`
 
@@ -197,40 +239,43 @@ def addLootFromYieldProfit(
 | Name | Type | Description |
 |------|------|-------------|
 | `_asset` | `address` | Yield asset address |
-| `_feeAmount` | `uint256` | Fee amount (may be 0) |
+| `_feeAmount` | `uint256` | Performance fee amount (may be 0) |
 | `_yieldRealized` | `uint256` | Total yield realized |
 | `_missionControl` | `address` | Optional MissionControl |
 | `_appraiser` | `address` | Optional Appraiser |
 | `_legoBook` | `address` | Optional LegoBook |
 
-#### Access
+#### Behavior
 
-Can only be called by user wallets
+1. Validates caller is a user wallet
+2. Logs performance fee (already transferred to contract)
+3. Distributes ambassador fee share if applicable
+4. Transfers leftover to governance
+5. If eligible, distributes yield bonus in RIPE tokens
 
 #### Events Emitted
 
-- `TxFeePaid` - If fee amount > 0 and ambassador exists
-- `YieldBonusPaid` - For each bonus distribution (user and/or ambassador)
+- `YieldPerformanceFeePaid` - Records yield fee
+- `AmbassadorTxFeePaid` - Records ambassador's share
+- `RevenueTransferredToGov` - Records transfer to governance
+- `YieldBonusPaid` - Records RIPE bonus distribution
 
-#### Example Usage
-```python
-# From UserWallet after yield harvest
-loot_distributor.addLootFromYieldProfit(
-    vault_token.address,
-    yield_fee,          # Protocol fee
-    total_yield,        # Total yield amount
-    mission_control.address,
-    appraiser.address,
-    lego_book.address
-)
-```
+## Yield Bonus System
 
-#### Notes
+### Internal: `_handleYieldBonus`
 
-- Fee already transferred to contract (no transferFrom)
-- Checks eligibility for yield bonus via YieldLego
-- Distributes bonus to user and/or ambassador based on ratios
-- Supports in-kind, underlying asset, or alternative asset bonuses
+Calculates and distributes RIPE token bonuses based on yield.
+
+#### Bonus Calculation Flow
+
+1. Check eligibility via `YieldLego.isEligibleForYieldBonus()`
+2. Convert yield to underlying amount (if vault token)
+3. Get USD value via Appraiser
+4. Convert USD to RIPE amount via `Appraiser.getAssetAmountFromRipe()`
+5. Calculate user bonus: `yield × bonusRatio`
+6. Calculate ambassador bonus: `yield × ambassadorBonusRatio`
+7. Check available balance (excluding reserved amounts)
+8. Add to claimable loot
 
 ## Claim Functions
 
@@ -243,45 +288,21 @@ Claims accumulated revenue share and bonus rewards.
 def claimRevShareAndBonusLoot(_user: address) -> uint256:
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User address to claim for |
-
 #### Returns
 
 | Type | Description |
 |------|-------------|
 | `uint256` | Number of assets claimed |
 
-#### Access
+#### Behavior
 
-- User (wallet owner)
-- Managers with `canClaimLoot` permission
-- Switchboard addresses
-
-#### Events Emitted
-
-- `LootClaimed` - For each asset claimed, contains user (indexed), asset (indexed), and amount
-
-#### Example Usage
-```python
-# User claims their rewards
-num_claimed = loot_distributor.claimRevShareAndBonusLoot(
-    user_wallet.address,
-    sender=user
-)
-
-print(f"Claimed {num_claimed} different assets")
-```
-
-#### Notes
-
-- Enforces cooldown period (except for switchboard)
-- Automatically deregisters assets with zero balance
-- Updates last claim timestamp
-- Claims all available assets in one transaction
+1. Validates claim permissions
+2. Gets RIPE staking parameters
+3. Iterates through all claimable assets
+4. For RIPE tokens: applies stake ratio via RipeTeller
+5. For other tokens: direct transfer
+6. Deregisters empty asset slots
+7. Updates last claim block
 
 ### `claimDepositRewards`
 
@@ -292,41 +313,20 @@ Claims accumulated deposit rewards based on points.
 def claimDepositRewards(_user: address) -> uint256:
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User address to claim for |
-
 #### Returns
 
 | Type | Description |
 |------|-------------|
 | `uint256` | Amount of rewards claimed |
 
-#### Access
+#### Behavior
 
-Same as `claimRevShareAndBonusLoot`
-
-#### Events Emitted
-
-- `DepositRewardsClaimed` - Contains user (indexed), asset (indexed), userRewards, and remainingRewards
-
-#### Example Usage
-```python
-# Claim deposit rewards
-rewards_amount = loot_distributor.claimDepositRewards(
-    user_wallet.address,
-    sender=user
-)
-```
-
-#### Notes
-
-- Must be current LootDistributor (not migrated)
-- Updates deposit points before calculation
-- Pro-rata distribution based on points share
-- Resets user points to 0 after claim
+1. Validates this is current LootDistributor
+2. Updates user deposit points
+3. Calculates pro-rata share: `rewards × userPoints / globalPoints`
+4. Applies RIPE staking if applicable
+5. Resets user points to 0
+6. Updates global points
 
 ### `claimAllLoot`
 
@@ -337,33 +337,30 @@ Claims both revenue share/bonuses and deposit rewards.
 def claimAllLoot(_user: address) -> bool:
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User address to claim for |
-
 #### Returns
 
 | Type | Description |
 |------|-------------|
 | `bool` | True if any rewards were claimed |
 
-#### Access
+### `getClaimableLootForAsset`
 
-Same as other claim functions
+Gets claimable amount for specific asset.
 
-#### Events Emitted
+```vyper
+@view
+@external
+def getClaimableLootForAsset(_user: address, _asset: address) -> uint256:
+```
 
-Combines events from both claim types
+### `getClaimableDepositRewards`
 
-#### Example Usage
-```python
-# Claim everything in one transaction
-success = loot_distributor.claimAllLoot(
-    user_wallet.address,
-    sender=user
-)
+Calculates expected deposit rewards without claiming.
+
+```vyper
+@view
+@external
+def getClaimableDepositRewards(_user: address) -> uint256:
 ```
 
 ## Deposit Points Functions
@@ -377,16 +374,6 @@ Updates deposit points for a user (switchboard only).
 def updateDepositPoints(_user: address):
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User to update points for |
-
-#### Access
-
-Only callable by switchboard addresses
-
 ### `updateDepositPointsWithNewValue`
 
 Updates points with a new USD value.
@@ -396,61 +383,27 @@ Updates points with a new USD value.
 def updateDepositPointsWithNewValue(_user: address, _newUsdValue: uint256):
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User to update |
-| `_newUsdValue` | `uint256` | New total USD value |
-
 #### Access
 
 - User wallets
 - Valid wallet configurations
 
-#### Example Usage
-```python
-# Update after deposit/withdrawal
-loot_distributor.updateDepositPointsWithNewValue(
-    user_wallet.address,
-    new_total_usd_value,
-    sender=wallet_config
-)
-```
+#### Behavior
+
+1. Gets current user and global points from Ledger
+2. Calculates new points based on time elapsed
+3. Updates user usdValue if changed
+4. Updates global usdValue (subtract old, add new)
+5. Saves to Ledger
 
 ### `updateDepositPointsOnEjection`
 
-Updates deposit points when a user wallet is ejected.
+Updates deposit points when wallet is ejected (sets USD value to 0).
 
 ```vyper
 @external
 def updateDepositPointsOnEjection(_user: address):
 ```
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User wallet being ejected |
-
-#### Access
-
-Only callable by switchboard addresses
-
-#### Example Usage
-```python
-# Called during wallet ejection process
-loot_distributor.updateDepositPointsOnEjection(
-    ejected_wallet.address,
-    sender=switchboard
-)
-```
-
-#### Notes
-
-- Fails gracefully if paused
-- Sets USD value to 0 while preserving accumulated points
-- Used specifically during wallet ejection scenarios
 
 ### `getLatestDepositPoints`
 
@@ -462,37 +415,11 @@ Calculates accumulated points since last update.
 def getLatestDepositPoints(_usdValue: uint256, _lastUpdate: uint256) -> uint256:
 ```
 
-#### Parameters
+#### Formula
 
-| Name | Type | Description |
-|------|------|-------------|
-| `_usdValue` | `uint256` | USD value held |
-| `_lastUpdate` | `uint256` | Last update block |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `uint256` | Accumulated points |
-
-#### Access
-
-Public view function
-
-#### Example Usage
-```python
-# Calculate points for a position
-points = loot_distributor.getLatestDepositPoints(
-    usd_value=10000 * 10**18,  # $10,000
-    last_update=last_update_block
-)
 ```
-
-#### Notes
-
-- Returns 0 if USD value is 0 or last update is 0
-- Formula: (USD Value × Blocks Elapsed) / 10^18
-- Used internally for all points calculations
+Points = USD Value × (Current Block - Last Update) / 10^18
+```
 
 ## Deposit Rewards Management
 
@@ -505,30 +432,15 @@ Adds rewards to the deposit rewards pool.
 def addDepositRewards(_asset: address, _amount: uint256):
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_asset` | `address` | Reward asset (must match configured) |
-| `_amount` | `uint256` | Amount to add |
-
 #### Access
 
-Anyone can add rewards
+Anyone can add rewards (typically protocol treasury)
 
-#### Events Emitted
+#### Behavior
 
-- `DepositRewardsAdded` - Contains asset (indexed), addedAmount, newTotalAmount, and adder (indexed)
-
-#### Example Usage
-```python
-# Protocol adds rewards
-loot_distributor.addDepositRewards(
-    undy_token.address,
-    reward_amount,
-    sender=treasury
-)
-```
+1. Validates asset matches configured depositRewardsAsset
+2. Transfers tokens from caller
+3. Adds to deposit rewards pool
 
 ### `recoverDepositRewards`
 
@@ -539,64 +451,74 @@ Recovers deposit rewards (emergency function).
 def recoverDepositRewards(_recipient: address):
 ```
 
-#### Parameters
+#### Access
 
-| Name | Type | Description |
-|------|------|-------------|
-| `_recipient` | `address` | Address to receive recovered rewards |
+Only callable by switchboard addresses
+
+## RIPE Staking Integration
+
+### Internal: `_handleRipeRewards`
+
+Handles RIPE token distribution with optional staking.
+
+```vyper
+@internal
+def _handleRipeRewards(
+    _user: address,
+    _amount: uint256,
+    _ripeStakeRatio: uint256,
+    _ripeLockDuration: uint256,
+    _ripeToken: address,
+    _ripeTeller: address,
+):
+```
+
+#### Behavior
+
+1. If stake ratio is 0: direct transfer to user
+2. Otherwise:
+   - Calculate stake amount: `amount × stakeRatio / 100_00`
+   - Stake via RipeTeller.depositIntoGovVault()
+   - Transfer remaining to user
+
+### `setRipeRewardsConfig`
+
+Updates RIPE staking configuration.
+
+```vyper
+@external
+def setRipeRewardsConfig(_ripeStakeRatio: uint256, _ripeLockDuration: uint256):
+```
 
 #### Access
 
 Only callable by switchboard addresses
 
-#### Events Emitted
-
-- `DepositRewardsRecovered` - Contains asset (indexed), recipient (indexed), and amount
-
 ## Administrative Functions
 
 ### `adjustLoot`
 
-Adjusts claimable loot for a user (security function).
+Adjusts claimable loot for a user (can only reduce, not increase).
 
 ```vyper
 @external
 def adjustLoot(_user: address, _asset: address, _newClaimable: uint256) -> bool:
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User to adjust |
-| `_asset` | `address` | Asset to adjust |
-| `_newClaimable` | `uint256` | New claimable amount |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `bool` | Success status |
-
 #### Access
 
 Only callable by switchboard addresses
 
-#### Events Emitted
+#### Use Cases
 
-- `LootAdjusted` - Contains user (indexed), asset (indexed), and newClaimable
-
-#### Notes
-
-- Can only adjust down, not up
-- Deregisters asset if set to 0
-- Used for security/anti-fraud purposes
+- Anti-fraud adjustments
+- Security interventions
 
 ## View Functions
 
 ### `getTotalClaimableAssets`
 
-Gets count of claimable assets for a user.
+Gets count of claimable assets with non-zero balance.
 
 ```vyper
 @view
@@ -604,21 +526,9 @@ Gets count of claimable assets for a user.
 def getTotalClaimableAssets(_user: address) -> uint256:
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_user` | `address` | User to check |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `uint256` | Number of assets with claimable balance |
-
 ### `getSwapFee`
 
-Gets swap fee for a token pair.
+Gets swap fee for a token pair (delegates to MissionControl).
 
 ```vyper
 @view
@@ -628,7 +538,7 @@ def getSwapFee(_user: address, _tokenIn: address, _tokenOut: address, _missionCo
 
 ### `getRewardsFee`
 
-Gets rewards fee for an asset.
+Gets rewards fee for an asset (delegates to MissionControl).
 
 ```vyper
 @view
@@ -646,9 +556,18 @@ Checks if caller can claim loot for user.
 def validateCanClaimLoot(_user: address, _caller: address) -> bool:
 ```
 
+#### Validation Logic
+
+1. User must be registered wallet
+2. Check cooloff period (unless switchboard)
+3. LegoBook always allowed
+4. Wallet owner always allowed
+5. Manager with `canClaimLoot` permission
+6. Switchboard always allowed
+
 ### `isValidWalletConfig`
 
-Validates if a caller is the wallet configuration for a user wallet.
+Validates if caller is the wallet configuration for a user wallet.
 
 ```vyper
 @view
@@ -656,78 +575,72 @@ Validates if a caller is the wallet configuration for a user wallet.
 def isValidWalletConfig(_wallet: address, _caller: address) -> bool:
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-|------|------|-------------|
-| `_wallet` | `address` | User wallet address |
-| `_caller` | `address` | Address to validate as wallet config |
-
-#### Returns
-
-| Type | Description |
-|------|-------------|
-| `bool` | True if caller is the valid wallet config |
-
-#### Access
-
-Public view function
-
-#### Example Usage
-```python
-# Check if caller is valid config
-is_valid = loot_distributor.isValidWalletConfig(
-    user_wallet.address,
-    potential_config.address
-)
-```
-
-#### Notes
-
-- Used for permission validation
-- Checks if wallet is registered in Ledger
-- Verifies caller matches wallet's config address
-
-### `getLootDistroConfig`
-
-Gets complete distribution configuration for an asset.
+## Events
 
 ```vyper
-@view
-@external
-def getLootDistroConfig(_wallet: address, _asset: address, _shouldGetLegoInfo: bool = False) -> LootDistroConfig:
-```
+event TransactionFeePaid:
+    user: indexed(address)
+    asset: indexed(address)
+    feeAmount: uint256
+    action: ActionType
 
-## Internal Distribution Logic
+event RevenueTransferredToGov:
+    asset: indexed(address)
+    amount: uint256
+    action: ActionType
 
-### Ambassador Revenue Share
+event YieldPerformanceFeePaid:
+    user: indexed(address)
+    asset: indexed(address)
+    feeAmount: uint256
+    yieldRealized: uint256
 
-Revenue share ratios vary by action type:
-- **Swap fees**: Uses `ambassadorRevShare.swapRatio`
-- **Yield fees**: Uses `ambassadorRevShare.yieldRatio`
-- **Rewards fees**: Uses `ambassadorRevShare.rewardsRatio`
+event AmbassadorTxFeePaid:
+    asset: indexed(address)
+    totalFee: uint256
+    ambassadorFeeRatio: uint256
+    ambassadorFee: uint256
+    ambassador: indexed(address)
+    action: ActionType
 
-### Yield Bonus Distribution
+event YieldBonusPaid:
+    bonusAsset: indexed(address)
+    bonusAmount: uint256
+    bonusRatio: uint256
+    yieldRealized: uint256
+    recipient: indexed(address)
+    isAmbassador: bool
 
-Bonus calculation follows priority:
-1. **Alternative asset**: If configured, converts to alt asset using prices
-2. **Underlying asset**: If vault token, converts using price per share
-3. **In-kind**: Same asset as yield
+event LootAdjusted:
+    user: indexed(address)
+    asset: indexed(address)
+    newClaimable: uint256
 
-Distribution ratios:
-- User bonus: `bonusRatio` percentage of yield
-- Ambassador bonus: `ambassadorBonusRatio` percentage of yield
+event LootClaimed:
+    user: indexed(address)
+    asset: indexed(address)
+    amount: uint256
 
-### Points Calculation
+event DepositRewardsAdded:
+    asset: indexed(address)
+    addedAmount: uint256
+    newTotalAmount: uint256
+    adder: indexed(address)
 
-Deposit points formula:
-```
-Points = USD Value × (Current Block - Last Update) / 10^18
-```
+event DepositRewardsClaimed:
+    user: indexed(address)
+    asset: indexed(address)
+    userRewards: uint256
+    remainingRewards: uint256
 
-User rewards calculation:
-```
-User Rewards = Total Rewards × User Points / Global Points
+event DepositRewardsRecovered:
+    asset: indexed(address)
+    recipient: indexed(address)
+    amount: uint256
+
+event RipeRewardsConfigSet:
+    ripeStakeRatio: uint256
+    ripeLockDuration: uint256
 ```
 
 ## Security Considerations
@@ -742,78 +655,9 @@ User Rewards = Total Rewards × User Points / Global Points
 - Balance checks before transfers
 - Reserved amount tracking for deposit rewards
 - Minimum transfer validation
+- Can only adjust loot down, never up
+
+### RIPE Integration Safety
+- Approval cleared after staking
+- Balance checks before transfers
 - Graceful failure on pause
-
-### State Management
-- Atomic updates for points
-- Proper deregistration of empty assets
-- Global tracking for fair distribution
-- Period-based cooldowns
-
-## Common Integration Patterns
-
-### Fee Collection Flow
-```python
-# In UserWallet after swap
-fee_amount = calculate_swap_fee(amount)
-if fee_amount > 0:
-    # Approve LootDistributor
-    token.approve(loot_distributor, fee_amount)
-    
-    # Send fee
-    loot_distributor.addLootFromSwapOrRewards(
-        token.address,
-        fee_amount,
-        ActionType.SWAP
-    )
-```
-
-### Yield Distribution Flow
-```python
-# In UserWallet after yield harvest
-yield_profit = calculate_yield_profit()
-fee = yield_profit * fee_ratio / 10000
-
-# Transfer fee to LootDistributor first
-if fee > 0:
-    token.transfer(loot_distributor, fee)
-
-# Notify about yield
-loot_distributor.addLootFromYieldProfit(
-    vault_token.address,
-    fee,
-    yield_profit,
-    mission_control,
-    appraiser,
-    lego_book
-)
-```
-
-### Claim Pattern
-```python
-# Check if can claim
-if loot_distributor.validateCanClaimLoot(user, caller):
-    # Get claimable count
-    num_assets = loot_distributor.getTotalClaimableAssets(user)
-    
-    if num_assets > 0:
-        # Claim everything
-        success = loot_distributor.claimAllLoot(user)
-```
-
-### Points Update Pattern
-```python
-# On deposit/withdrawal
-new_usd_value = calculate_portfolio_value()
-loot_distributor.updateDepositPointsWithNewValue(
-    user_wallet,
-    new_usd_value
-)
-
-# On user ejection
-loot_distributor.updateDepositPointsOnEjection(user_wallet)
-```
-
-## Testing
-
-For comprehensive test examples, see: [`tests/core/test_loot_distributor.py`](../../../tests/core/test_loot_distributor.py)
