@@ -1,6 +1,6 @@
 # Ledger Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/data/Ledger.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/data/Ledger.vy)
 
 ## Overview
 

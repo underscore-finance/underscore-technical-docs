@@ -1,6 +1,6 @@
 # WalletBackpack Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/registries/WalletBackpack.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/registries/WalletBackpack.vy)
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # RipeLego Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/legos/RipeLego.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/legos/RipeLego.vy)
 
 ## Overview
 

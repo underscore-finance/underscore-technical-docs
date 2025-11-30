@@ -1,6 +1,6 @@
 # HighCommand Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/walletBackpack/HighCommand.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/HighCommand.vy)
 
 ## Overview
 

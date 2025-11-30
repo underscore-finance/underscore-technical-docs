@@ -1,6 +1,6 @@
 # Erc20Token Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/modules/Erc20Token.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/Erc20Token.vy)
 
 ## Overview
 
@@ -200,7 +200,7 @@ def __init__(
 ```python
 # Deploy with UndyHq
 undy_token = boa.load(
-    "https://github.com/underscore-finance/underscore/blob/master/contracts/modules/Erc20Token.vy",
+    "https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/Erc20Token.vy",
     "Underscore Token",
     "UNDY",
     18,
@@ -214,7 +214,7 @@ undy_token = boa.load(
 
 # Deploy with temporary governance
 undy_token = boa.load(
-    "https://github.com/underscore-finance/underscore/blob/master/contracts/modules/Erc20Token.vy",
+    "https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/modules/Erc20Token.vy",
     "Underscore Token",
     "UNDY",
     18,

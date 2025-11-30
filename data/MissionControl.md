@@ -1,6 +1,6 @@
 # MissionControl Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/data/MissionControl.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/data/MissionControl.vy)
 
 ## Overview
 

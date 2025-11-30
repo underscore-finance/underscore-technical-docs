@@ -1,6 +1,6 @@
 # Billing Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/Billing.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/Billing.vy)
 
 ## Overview
 
@@ -70,7 +70,7 @@ The contract implements sophisticated payment logic including multi-source asset
 |  |    2. Verify underlying matches payment asset                      | |
 |  |    3. Get current price per share                                  | |
 |  |    4. Calculate withdrawal amount                                  | |
-|  |    5. Add 1% buffer for rounding/fees                              | |
+|  |    5. Add 2% buffer for rounding/fees                              | |
 |  |    6. Withdraw and aggregate                                       | |
 |  |                                                                   | |
 |  |  Optimization:                                                     | |
@@ -299,14 +299,14 @@ Public view function
 
 1. **Direct Balance Check**: First checks if wallet has sufficient direct balance
 2. **Yield Discovery**: If insufficient, searches for yield vaults with matching underlying
-3. **Withdrawal Calculation**: Calculates vault tokens needed with 1% buffer
+3. **Withdrawal Calculation**: Calculates vault tokens needed with 2% buffer
 4. **Asset Transfer**: Executes transfer through UserWallet contract
 5. **Cleanup**: Deregisters assets with zero balance
 
 ### Yield Withdrawal Strategy
 
 ```
-Target Amount = Requested Amount × 101% (1% buffer)
+Target Amount = Requested Amount × 102% (2% buffer)
 
 For each yield asset:
   If underlying matches payment asset:
@@ -337,7 +337,7 @@ For each yield asset:
 ### Payment Security
 - Cheques require exact payment amounts
 - Payees allow partial payments for flexibility
-- 1% buffer ensures sufficient withdrawals
+- 2% buffer ensures sufficient withdrawals
 - Automatic asset deregistration prevents dust
 
 ### State Management

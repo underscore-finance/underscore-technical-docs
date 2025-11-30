@@ -4,7 +4,7 @@
 
 - [Underscore Developers](./README.md)
 - [Deployed Contracts](./deployments.md)
-- [Github](https://github.com/underscore-finance/underscore)
+- [Github](https://github.com/underscore-finance/underscore-protocol)
 - [User Docs](https://docs.underscore.finance/)
 
 ## User Wallet
@@ -57,6 +57,11 @@
 ## Agent
 
 - [AgentWrapper](./agent/AgentWrapper.md)
+- [AgentSenderGeneric](./agent/AgentSenderGeneric.md)
+- [AgentSenderSpecial](./agent/AgentSenderSpecial.md)
+- [EarnVaultAgent](./agent/EarnVaultAgent.md)
+- [EarnVaultAgentSigHelper](./agent/EarnVaultAgentSigHelper.md)
+- [UserWalletSignatureHelper](./agent/UserWalletSignatureHelper.md)
 
 ## Registries
 
@@ -76,8 +81,12 @@
 - [Ownership](./modules/Ownership.md)
 - [Timelock](./modules/Timelock.md)
 - [YieldLegoData](./modules/YieldLegoData.md)
+- [SigHelper](./modules/SigHelper.md)
 
 ## Config
 
+- [DefaultsBase](./config/DefaultsBase.md)
+- [DefaultsLocal](./config/DefaultsLocal.md)
 - [SwitchboardAlpha](./config/SwitchboardAlpha.md)
 - [SwitchboardBravo](./config/SwitchboardBravo.md)
+- [SwitchboardCharlie](./config/SwitchboardCharlie.md)

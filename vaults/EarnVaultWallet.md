@@ -1,6 +1,6 @@
 # EarnVaultWallet Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/vaults/modules/EarnVaultWallet.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/vaults/modules/EarnVaultWallet.vy)
 
 ## Overview
 

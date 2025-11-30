@@ -1,6 +1,6 @@
 # Hatchery Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/Hatchery.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/Hatchery.vy)
 
 ## Overview
 
@@ -233,10 +233,10 @@ def doesWalletStillHaveTrialFundsWithAddys(
     _appraiser: address,
     _ledger: address,
 ) -> bool:
-    return False  # Always returns False
+    return True  # backwards compatibility (legacy wallets)
 ```
 
-Trial funds functionality has been removed. This function exists only for backwards compatibility with legacy wallets.
+Trial funds functionality has been removed. This function exists only for backwards compatibility with legacy wallets and always returns `True`.
 
 ## Security Considerations
 

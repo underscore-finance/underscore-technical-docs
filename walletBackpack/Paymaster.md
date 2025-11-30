@@ -1,6 +1,6 @@
 # Paymaster Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/core/walletBackpack/Paymaster.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/core/walletBackpack/Paymaster.vy)
 
 > **Note**: The file path in the repository is `contracts/core/walletBackpack/Paymaster.vy`
 

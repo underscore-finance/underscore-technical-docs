@@ -1,6 +1,6 @@
 # DEX Lego Interface Technical Documentation
 
-[View Interface Source](https://github.com/underscore-finance/underscore/blob/master/interfaces/DexLego.vyi)
+[View Interface Source](https://github.com/underscore-finance/underscore-protocol/blob/master/interfaces/DexLego.vyi)
 
 ## Overview
 

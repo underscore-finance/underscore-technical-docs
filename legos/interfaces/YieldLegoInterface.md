@@ -1,6 +1,6 @@
 # Yield Lego Interface Technical Documentation
 
-[View Interface Source](https://github.com/underscore-finance/underscore/blob/master/interfaces/YieldLego.vyi)
+[View Interface Source](https://github.com/underscore-finance/underscore-protocol/blob/master/interfaces/YieldLego.vyi)
 
 ## Overview
 

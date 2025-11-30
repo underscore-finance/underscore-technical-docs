@@ -1,6 +1,6 @@
 # SwitchboardAlpha Technical Documentation
 
-[View Source Code](https://github.com/underscore-finance/underscore/blob/master/contracts/config/SwitchboardAlpha.vy)
+[View Source Code](https://github.com/underscore-finance/underscore-protocol/blob/master/contracts/config/SwitchboardAlpha.vy)
 
 ## Overview
 
