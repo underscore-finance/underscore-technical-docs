@@ -27,7 +27,7 @@
 | --------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Appraiser       | [0x8C6521e6f2676a7AdC8484444f161c3538e545e2](https://basescan.org/address/0x8C6521e6f2676a7AdC8484444f161c3538e545e2) |
 | Billing         | [0xB61dDF5a56b4a008f072087BBe411A9B6F576E4e](https://basescan.org/address/0xB61dDF5a56b4a008f072087BBe411A9B6F576E4e) |
-| Hatchery        | [0x95B85a88200b33C64f9935750C2Ea62fB54141E7](https://basescan.org/address/0x95B85a88200b33C64f9935750C2Ea62fB54141E7) |
+| Hatchery        | [0x3ea153bf93367e5933818BB0E7ebE3A9AC0ac193](https://basescan.org/address/0x3ea153bf93367e5933818BB0E7ebE3A9AC0ac193) |
 | LootDistributor | [0x23d69D99061acf04c6e86f58692F533E4f039dE8](https://basescan.org/address/0x23d69D99061acf04c6e86f58692F533E4f039dE8) |
 
 ### Yield Legos
