@@ -41,7 +41,7 @@ Essential protocol functionality for user wallets and system operations.
 | [UserWalletConfig.vy](userWallet/UserWalletConfig.md) | Configuration management for individual wallets including risk parameters and strategy settings                                                                          |
 | [Appraiser.vy](core/Appraiser.md)                     | Multi-oracle price aggregation system providing reliable asset valuations with staleness protection                                                                      |
 | [Billing.vy](core/Billing.md)                         | Pull payment engine that enables authorized payees and cheque recipients to withdraw funds directly from a UserWallet, with logic to unwind yield positions if necessary |
-| [Hatchery.vy](core/Hatchery.md)                       | User wallet factory with trial fund management and creation limit enforcement                                                                                            |
+| [Hatchery.vy](userWallet/Hatchery.md)                 | User wallet factory with trial fund management and creation limit enforcement                                                                                            |
 | [LootDistributor.vy](core/LootDistributor.md)         | Rewards distribution system managing loot claiming, deposit points, and user incentives                                                                                  |
 
 ## Data & Configuration
@@ -67,7 +67,7 @@ Protocol-managed vault system for yield optimization and leveraged strategies.
 | [LevgVaultWallet.vy](vaults/LevgVaultWallet.md)     | Internal wallet module for LevgVault handling debt positions, collateral, and leverage operations        |
 | [LevgVaultHelper.vy](vaults/LevgVaultHelper.md)     | Utility contract providing leverage calculations, health factor monitoring, and position safety checks   |
 | [VaultErc20Token.vy](vaults/VaultErc20Token.md)     | Reusable ERC-20 token module for vault share tokens with mint/burn functionality                         |
-| [VaultRegistry.vy](vaults/VaultRegistry.md)        | Central registry for all Underscore vaults tracking vault types, underlying assets, and approval status  |
+| [VaultRegistry.vy](registries/VaultRegistry.md)    | Central registry for all Underscore vaults tracking vault types, underlying assets, and approval status  |
 
 ## Lego Partners
 

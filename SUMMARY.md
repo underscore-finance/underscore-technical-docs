@@ -7,10 +7,20 @@
 - [Github](https://github.com/underscore-finance/underscore-protocol)
 - [User Docs](https://docs.underscore.finance/)
 
-## User Wallet
+## Vaults
+
+- [EarnVault](./vaults/EarnVault.md)
+- [EarnVaultWallet](./vaults/EarnVaultWallet.md)
+- [LevgVault](./vaults/LevgVault.md)
+- [LevgVaultWallet](./vaults/LevgVaultWallet.md)
+- [LevgVaultHelper](./vaults/LevgVaultHelper.md)
+- [VaultErc20Token](./vaults/VaultErc20Token.md)
+
+## User Wallets
 
 - [UserWallet](./userWallet/UserWallet.md)
 - [UserWalletConfig](./userWallet/UserWalletConfig.md)
+- [Hatchery](./userWallet/Hatchery.md)
 
 ## Wallet Backpack
 
@@ -21,54 +31,44 @@
 - [Paymaster](./walletBackpack/Paymaster.md)
 - [Sentinel](./walletBackpack/Sentinel.md)
 
-## Vaults
+## Agents
 
-- [EarnVault](./vaults/EarnVault.md)
-- [EarnVaultWallet](./vaults/EarnVaultWallet.md)
-- [LevgVault](./vaults/LevgVault.md)
-- [LevgVaultWallet](./vaults/LevgVaultWallet.md)
-- [LevgVaultHelper](./vaults/LevgVaultHelper.md)
-- [VaultErc20Token](./vaults/VaultErc20Token.md)
-- [VaultRegistry](./vaults/VaultRegistry.md)
+- [AgentWrapper](./agent/AgentWrapper.md)
+- [AgentSenderGeneric](./agent/AgentSenderGeneric.md)
+- [AgentSenderSpecial](./agent/AgentSenderSpecial.md)
+- [EarnVaultAgent](./agent/EarnVaultAgent.md)
+- [LevgVaultAgent](./agent/LevgVaultAgent.md)
+- [EarnVaultAgentSigHelper](./agent/EarnVaultAgentSigHelper.md)
+- [UserWalletSignatureHelper](./agent/UserWalletSignatureHelper.md)
 
-## Core
-
-- [Appraiser](./core/Appraiser.md)
-- [Billing](./core/Billing.md)
-- [Hatchery](./core/Hatchery.md)
-- [LootDistributor](./core/LootDistributor.md)
-
-## Lego Interfaces
+## Legos
 
 - [Yield Lego Interface](./legos/interfaces/YieldLegoInterface.md)
 - [DEX Lego Interface](./legos/interfaces/DexLegoInterface.md)
-
-## Special Legos
-
 - [RipeLego](./legos/RipeLego.md)
 - [UnderscoreLego](./legos/UnderscoreLego.md)
 - [LegoTools](./legos/LegoTools.md)
+
+## Registries
+
+- [UndyHq](./registries/UndyHq.md)
+- [LegoBook](./registries/LegoBook.md)
+- [VaultRegistry](./registries/VaultRegistry.md)
+- [WalletBackpack](./registries/WalletBackpack.md)
+- [Switchboard](./registries/Switchboard.md)
+- [Helpers](./registries/Helpers.md)
 
 ## Data
 
 - [Ledger](./data/Ledger.md)
 - [MissionControl](./data/MissionControl.md)
 
-## Agent
+## Core Utilities
 
-- [AgentWrapper](./agent/AgentWrapper.md)
-- [AgentSenderGeneric](./agent/AgentSenderGeneric.md)
-- [AgentSenderSpecial](./agent/AgentSenderSpecial.md)
-- [EarnVaultAgent](./agent/EarnVaultAgent.md)
-- [EarnVaultAgentSigHelper](./agent/EarnVaultAgentSigHelper.md)
-- [UserWalletSignatureHelper](./agent/UserWalletSignatureHelper.md)
-
-## Registries
-
-- [LegoBook](./registries/LegoBook.md)
-- [Switchboard](./registries/Switchboard.md)
-- [UndyHq](./registries/UndyHq.md)
-- [WalletBackpack](./registries/WalletBackpack.md)
+- [Appraiser](./core/Appraiser.md)
+- [Billing](./core/Billing.md)
+- [LootDistributor](./core/LootDistributor.md)
+- [LevgVaultTools](./core/LevgVaultTools.md)
 
 ## Modules
 
@@ -79,9 +79,9 @@
 - [Erc20Token](./modules/Erc20Token.md)
 - [LocalGov](./modules/LocalGov.md)
 - [Ownership](./modules/Ownership.md)
+- [SigHelper](./modules/SigHelper.md)
 - [Timelock](./modules/Timelock.md)
 - [YieldLegoData](./modules/YieldLegoData.md)
-- [SigHelper](./modules/SigHelper.md)
 
 ## Config
 

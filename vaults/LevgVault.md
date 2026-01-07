@@ -149,7 +149,7 @@ Deposits exact amount of assets and receives proportional shares.
 ```vyper
 @external
 @nonreentrant
-def deposit(_assets: uint256, _receiver: address) -> uint256:
+def deposit(_assets: uint256, _receiver: address = msg.sender) -> uint256:
 ```
 
 #### Parameters
@@ -187,7 +187,7 @@ Deposits with slippage protection on minimum shares.
 def depositWithMinAmountOut(
     _assets: uint256,
     _minAmountOut: uint256,
-    _receiver: address
+    _receiver: address = msg.sender
 ) -> uint256:
 ```
 
@@ -198,7 +198,7 @@ Mints exact shares, pulling required assets.
 ```vyper
 @external
 @nonreentrant
-def mint(_shares: uint256, _receiver: address) -> uint256:
+def mint(_shares: uint256, _receiver: address = msg.sender) -> uint256:
 ```
 
 ### `maxDeposit` / `maxMint`
@@ -224,7 +224,7 @@ Withdraws exact amount of assets, burning required shares.
 ```vyper
 @external
 @nonreentrant
-def withdraw(_assets: uint256, _receiver: address, _owner: address) -> uint256:
+def withdraw(_assets: uint256, _receiver: address = msg.sender, _owner: address = msg.sender) -> uint256:
 ```
 
 #### Parameters
@@ -255,7 +255,7 @@ Redeems exact shares for proportional assets.
 ```vyper
 @external
 @nonreentrant
-def redeem(_shares: uint256, _receiver: address, _owner: address) -> uint256:
+def redeem(_shares: uint256, _receiver: address = msg.sender, _owner: address = msg.sender) -> uint256:
 ```
 
 ### `redeemWithMinAmountOut`
@@ -268,8 +268,8 @@ Redeems with slippage protection.
 def redeemWithMinAmountOut(
     _shares: uint256,
     _minAmountOut: uint256,
-    _receiver: address,
-    _owner: address
+    _receiver: address = msg.sender,
+    _owner: address = msg.sender
 ) -> uint256:
 ```
 
