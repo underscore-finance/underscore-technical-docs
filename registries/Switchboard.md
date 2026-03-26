@@ -6,6 +6,8 @@
 
 Switchboard is the configuration registry and access control hub for the Underscore Protocol. It maintains a registry of authorized configuration-related contracts (SwitchboardAlpha, SwitchboardBravo, etc.) while providing unified blacklist management across protocol tokens. As a Department contract, it integrates modular governance and registry components to create a secure, time-locked configuration system.
 
+> **Live reference**: For current deployment addresses and protocol configuration references on Base, use the [Deployments](https://params.underscore.finance/deployments) and [Protocol](https://params.underscore.finance/protocol) views in Params Explorer. This page explains the registry mechanics; Params Explorer shows the current live configuration surface.
+
 **Core Functions**:
 - **Configuration Registry**: Maintains a list of authorized switchboard contracts with time-locked changes.
 - **Blacklist Coordination**: Provides a centralized interface for token blacklist management across multiple tokens.

@@ -3,6 +3,7 @@
 ## Home
 
 - [Underscore Developers](./README.md)
+- [Params Explorer](https://params.underscore.finance/)
 - [Deployed Contracts](./deployments.md)
 - [Github](https://github.com/underscore-finance/underscore-protocol)
 - [User Docs](https://docs.underscore.finance/)

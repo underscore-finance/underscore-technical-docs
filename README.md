@@ -2,6 +2,8 @@
 
 > **Looking for user documentation?** Visit the [User Documentation](https://docs.underscore.finance/) to learn about how the protocol works, mechanism design, and conceptual guides (non-technical).
 
+> **Need live onchain state?** Use the [Params Explorer](https://params.underscore.finance/) as the live operational companion to these docs. While this site explains contract architecture and interfaces, Params Explorer shows the current state of the protocol on Base: [protocol parameters](https://params.underscore.finance/protocol), [vault configs](https://params.underscore.finance/vaults), [Lego integrations](https://params.underscore.finance/legos), and [deployed contracts](https://params.underscore.finance/deployments).
+
 ## Overview
 
 Underscore Protocol is a comprehensive wallet infrastructure system that provides **non-custodial smart contract wallets with integrated DeFi access, automated management capabilities, and sophisticated permission controls**. The protocol creates programmable wallet instances that can interact with external DeFi protocols through standardized interfaces while maintaining granular security controls and delegation mechanisms.

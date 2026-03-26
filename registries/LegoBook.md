@@ -6,6 +6,8 @@
 
 LegoBook is the master registry for all Lego partner contracts (DeFi protocol integrations) in the Underscore Protocol. It maintains the authoritative directory of yield protocols, DEX integrations, and other DeFi building blocks while providing unified access control and configuration management. As a Department contract, it combines governance controls with the registry functionality needed to coordinate protocol integrations safely.
 
+> **Live reference**: For the currently active Lego integrations, registry entries, and onchain statuses on Base, see the [Legos tab in Params Explorer](https://params.underscore.finance/legos). This page explains the registry design; Params Explorer shows the current live registry contents.
+
 **Core Functions**:
 - **Lego Partner Registry**: Maintains a registry of all DeFi protocol integration contracts (Yield Legos, DEX Legos).
 - **LegoTools Coordination**: Manages the official [LegoTools](../legos/LegoTools.md) contract address for protocol-wide routing.

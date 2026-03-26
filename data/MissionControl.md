@@ -6,6 +6,8 @@
 
 MissionControl is the central configuration management contract for the Underscore Protocol. As a Department contract, it stores and manages all protocol-wide settings including wallet creation parameters, fee structures, asset configurations, yield settings, and security controls. It serves as the single source of truth for protocol behavior and limits.
 
+> **Live reference**: For the current protocol configuration on Base, inspect the [Protocol tab in Params Explorer](https://params.underscore.finance/protocol). This documentation explains the structure and behavior of MissionControl; Params Explorer shows what is live right now.
+
 **Core Features**:
 - **Global Configuration Management**: Store protocol-wide settings for wallets, agents, managers, payees, and cheques
 - **Asset-Specific Settings**: Configure per-asset fees, yield parameters, and integration details

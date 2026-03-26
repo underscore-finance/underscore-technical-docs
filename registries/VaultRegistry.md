@@ -6,6 +6,8 @@
 
 VaultRegistry is the central registry and configuration contract for all Underscore vaults (both [EarnVault](../vaults/EarnVault.md) and [LevgVault](../vaults/LevgVault.md)). It manages vault registration, configuration settings, approved vault tokens, user allowlists, and emergency controls. All vault operations reference VaultRegistry for their operational parameters.
 
+> **Live reference**: For the current vault list, vault parameters, and approved vault-token relationships on Base, see the [Vaults tab in Params Explorer](https://params.underscore.finance/vaults). This page documents how VaultRegistry works; Params Explorer shows the current live state.
+
 **Core Responsibilities**:
 - **Vault Registration**: Register and deregister vaults with timelocked processes
 - **Configuration Management**: Deposit/withdrawal rules, fees, and limits per vault
